@@ -130,6 +130,17 @@ export const resources = {
           "limitType": "Limit type",
           "alertValue": "Alert value",
           "deviceName": "Device name",
+          "eventName": "Event name",
+          "eventType": "Event type",
+          "groupName": "Group name",
+          "mqttName": "MQTT name",
+          "clientId": "Client ID",
+          "checkStateInterval": "Check state interval",
+          "model": "Model",
+          "revision": "Revision",
+          "tenantName": "Tenant name",
+          "serialNumber": "Serial number",
+          "mqttMessagesLimit": "MQTT messages limit"
         }
       },
       "SettingsPage": {
@@ -370,6 +381,17 @@ export const resources = {
           "limitType": "Rodzaj limitu",
           "alertValue": "Wartości alarmu",
           "deviceName": "Nazwa urządzenia",
+          "eventName": "Nazwa zdarzenia",
+          "eventType": "Typ zdarzenia",
+          "groupName": "Nazwa grupy",
+          "mqttName": "Nazwa MQTT",
+          "clientId": "ID klienta",
+          "checkStateInterval": "Interwał sprawdzania stanu",
+          "model": "Model",
+          "revision": "Rewizja",
+          "tenantName": "Nazwa tenanta",
+          "serialNumber": "Numer seryjny",
+          "mqttMessagesLimit": "Limit wiadomości MQTT"
         }
       },
       "SettingsPage": {

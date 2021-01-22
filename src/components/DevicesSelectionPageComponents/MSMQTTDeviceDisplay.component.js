@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
+function MSMQTTDeviceDisplay({ selectedDevice, allDevices, tableView }) {
   const { t } = useTranslation();
   const classes = useStyles();
   const device = allDevices[selectedDevice.selectedDeviceID]
@@ -48,12 +48,18 @@ function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
           [t(`DevicesSelectionPage.Properties.type`), `${device.type}`],
           [t(`DevicesSelectionPage.Properties.boarded`), `${device.boarded}`],
           [t(`DevicesSelectionPage.Properties.isActive`), `${device.isActive}`],
+          [t(`DevicesSelectionPage.Properties.mqttName`), `${device.mqttName}`],
+          [t(`DevicesSelectionPage.Properties.clientId`), `${device.clientId}`],
+          [t(`DevicesSelectionPage.Properties.checkStateInterval`), `${device.checkStateInterval}`],
+          [t(`DevicesSelectionPage.Properties.model`), `${device.model}`],
+          [t(`DevicesSelectionPage.Properties.revision`), `${device.revision}`],
+          [t(`DevicesSelectionPage.Properties.tenantName`), `${device.tenantName}`],
+          [t(`DevicesSelectionPage.Properties.serialNumber`), `${device.serialNumber}`],
+          [t(`DevicesSelectionPage.Properties.mqttMessagesLimit`), `${device.mqttMessagesLimit}`],
           [t(`DevicesSelectionPage.Properties.dataStorageSize`), `${device.dataStorageSize}`],
           [t(`DevicesSelectionPage.Properties.eventStorageSize`), `${device.eventStorageSize}`],
           [t(`DevicesSelectionPage.Properties.numberOfDataFilesToSend`), `${device.numberOfDataFilesToSend}`],
           [t(`DevicesSelectionPage.Properties.numberOfEventFilesToSend`), `${device.numberOfEventFilesToSend}`],
-          [t(`DevicesSelectionPage.Properties.numberOfSendDataRetries`), `${device.numberOfSendDataRetries}`],
-          [t(`DevicesSelectionPage.Properties.numberOfSendEventRetries`), `${device.numberOfSendEventRetries}`],
           [t(`DevicesSelectionPage.Properties.sendDataFileInterval`), `${device.sendDataFileInterval}`],
           [t(`DevicesSelectionPage.Properties.sendEventFileInterval`), `${device.sendEventFileInterval}`]
         ]
@@ -142,9 +148,10 @@ function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
 
       cols = [t('DevicesSelectionPage.Properties.deviceName'),
       t('DevicesSelectionPage.Properties.elementName'),
-      t('DevicesSelectionPage.Properties.qualityCodeEnabled'),
+      t('DevicesSelectionPage.Properties.variableName'),
+      t('DevicesSelectionPage.Properties.unit'),
+      t('DevicesSelectionPage.Properties.groupName'),
       t('DevicesSelectionPage.Properties.sendingInterval'),
-      t('DevicesSelectionPage.Properties.datapointId')
       ]
     }
     Object.values(device.dataToSendConfig).forEach((dataConfig, i) => {
@@ -152,7 +159,6 @@ function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
       //associate deviceId with corresponding device name and elementId with its variable's name
       dataConfig = {
         ...dataConfig,
-        qualityCodeEnabled: `${dataConfig.qualityCodeEnabled}`,
         associatedDeviceIDName: allDevices[dataConfig.deviceId] !== undefined ? allDevices[dataConfig.deviceId].name : '',
         associatedElementIDName: allDevices[dataConfig.deviceId] !== undefined && allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !== undefined ? allDevices[dataConfig.deviceId].variables[dataConfig.elementId].name : ''
       }
@@ -160,11 +166,11 @@ function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
         rows.push([dataConfig.associatedDeviceIDName, dataConfig.associatedElementIDName, dataConfig.sendingInterval])
       }
       else {
-        //push Texts property contents into collapsed table
+        //push dataConverter's properties contents into collapsed table
         collapsedRows.push([dataConfig.dataConverter.conversionType, dataConfig.dataConverter.precision])
         rowToBeCollapsed.push({ rowIndex: i, content: <UniversalTable small noElevation columns={collapsedCols} rows={collapsedRows} /> })
 
-        rows.push([dataConfig.associatedDeviceIDName, dataConfig.associatedElementIDName, dataConfig.qualityCodeEnabled, dataConfig.sendingInterval, dataConfig.datapointId])
+        rows.push([dataConfig.associatedDeviceIDName, dataConfig.associatedElementIDName, dataConfig.variableName, dataConfig.variableUnit, dataConfig.groupName, dataConfig.sendingInterval])
       }
     })
 
@@ -190,12 +196,9 @@ function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
       cols = [t('DevicesSelectionPage.Properties.deviceName'),
       t('DevicesSelectionPage.Properties.elementName'),
       t('DevicesSelectionPage.Properties.sendingInterval'),
-      t('DevicesSelectionPage.Properties.source'),
       t('DevicesSelectionPage.Properties.severity'),
-      t('DevicesSelectionPage.Properties.entityId'),
-      t('DevicesSelectionPage.Properties.correlationId'),
-      t('DevicesSelectionPage.Properties.code'),
-      t('DevicesSelectionPage.Properties.acknowledged')
+      t('DevicesSelectionPage.Properties.eventName'),
+      t('DevicesSelectionPage.Properties.eventType')
       ]
     }
     Object.values(device.eventsToSendConfig).forEach((eventConfig, i) => {
@@ -204,18 +207,12 @@ function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
         ...eventConfig,
         associatedDeviceIDName: allDevices[eventConfig.deviceId] !== undefined ? allDevices[eventConfig.deviceId].name : '',
         associatedElementIDName: allDevices[eventConfig.deviceId] !== undefined && allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !== undefined ? allDevices[eventConfig.deviceId].alerts[eventConfig.elementId].name : '',
-        //make sure the following exist, if not set them empty string
-        source: eventConfig.source !== undefined ? eventConfig.source : '',
-        code: eventConfig.code !== undefined ? eventConfig.code : '',
-        acknowledged: eventConfig.acknowledged !== undefined ? `${eventConfig.acknowledged}` : '',
-        correlationId: eventConfig.correlationId !== undefined ? eventConfig.correlationId : ''
-
       }
       if (tableView === 'simple') {
         rows.push([eventConfig.associatedDeviceIDName, eventConfig.associatedElementIDName, eventConfig.sendingInterval])
       }
       else {
-        rows.push([eventConfig.associatedDeviceIDName, eventConfig.associatedElementIDName, eventConfig.sendingInterval, eventConfig.source, eventConfig.severity, eventConfig.entityId, eventConfig.correlationId, eventConfig.code, eventConfig.acknowledged])
+        rows.push([eventConfig.associatedDeviceIDName, eventConfig.associatedElementIDName, eventConfig.sendingInterval, eventConfig.severity, eventConfig.eventName, eventConfig.eventType])
       }
     })
 
@@ -274,4 +271,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(MSAgentDeviceDisplay)
+export default connect(mapStateToProps)(MSMQTTDeviceDisplay)

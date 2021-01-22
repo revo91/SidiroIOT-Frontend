@@ -6,8 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { toggleTableView } from '../../actions/DevicesSelectionPage.action';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import Divider from '@material-ui/core/Divider'
-import Grid from '@material-ui/core/Grid'
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
   devicesTitleInline: {
@@ -44,8 +44,6 @@ function DeviceDetailsTitle({ selectedDevice, allDevices, toggleTableView, table
           />
         </Grid>
       </Grid>
-
-
       <Divider />
     </React.Fragment>
   )

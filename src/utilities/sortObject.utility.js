@@ -18,7 +18,7 @@ export const sortByDeviceType = (obj) => {
         [key]: value
       }
     }
-    else if (value.type === 'MSAgentDevice') {
+    else if (value.type === 'MSAgentDevice' || value.type === 'MSMQTTAgentDevice') {
       agentDevices = {
         ...agentDevices,
         [key]: value
@@ -38,7 +38,7 @@ export const sortByDeviceType = (obj) => {
   return {
     sortedConnectableDevices,
     sortedInternalDevices,
-sortedAgentDevices,
-sortedRestDevices
+    sortedAgentDevices,
+    sortedRestDevices
   }
 }

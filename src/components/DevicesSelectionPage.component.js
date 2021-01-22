@@ -17,6 +17,7 @@ import S7DeviceDisplay from './DevicesSelectionPageComponents/S7DeviceDisplay.co
 import InternalDeviceDisplay from './DevicesSelectionPageComponents/InternalDeviceDisplay.component';
 import MBGatewayDeviceDisplay from './DevicesSelectionPageComponents/MBGatewayDeviceDisplay.component';
 import MSAgentDeviceDisplay from './DevicesSelectionPageComponents/MSAgentDeviceDisplay.component';
+import MSMQTTDeviceDisplay from './DevicesSelectionPageComponents/MSMQTTDeviceDisplay.component';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -110,6 +111,8 @@ function DevicesSelectionPage(props) {
         return <MBGatewayDeviceDisplay />
       case 'MSAgentDevice':
         return <MSAgentDeviceDisplay />
+      case 'MSMQTTAgentDevice':
+        return <MSMQTTDeviceDisplay />
       default:
         return null
     }

@@ -8,11 +8,12 @@ import { connect } from 'react-redux';
 import { selectDevice } from '../actions/DevicesList.action';
 import OnlineCircleIcon from '@material-ui/icons/FiberManualRecord';
 import DeviceUnknownIcon from '@material-ui/icons/DeviceUnknown';
-import { ReactComponent as PacIcon } from '../assets/pacIcon.svg';
-import { ReactComponent as S7Icon } from '../assets/S7Icon.svg';
+import { ReactComponent as ModbusDeviceIcon } from '../assets/PacIcon.svg';
+import { ReactComponent as S7DeviceIcon } from '../assets/S7Icon.svg';
 import { ReactComponent as InternalDeviceIcon } from '../assets/InternalDeviceIcon.svg';
 import { ReactComponent as MBGatewayDeviceIcon } from '../assets/MBGatewayIcon.svg';
-import { ReactComponent as MSAgentIcon } from '../assets/MSAgentIcon.svg';
+import { ReactComponent as MSAgentDeviceIcon } from '../assets/MSAgentIcon.svg';
+import { ReactComponent as MQTTDeviceIcon } from '../assets/MQTTIcon.svg';
 import { sortByDeviceType } from '../utilities/sortObject.utility';
 import Divider from '@material-ui/core/Divider';
 
@@ -57,15 +58,17 @@ function SimpleList(props) {
   const deviceTypeIcon = (type) => {
     switch (type) {
       case 'MBDevice':
-        return <PacIcon className={classes.iconMarginHorizontal} />
+        return <ModbusDeviceIcon className={classes.iconMarginHorizontal} />
       case 'S7Device':
-        return <S7Icon className={classes.iconMarginHorizontal} />
+        return <S7DeviceIcon className={classes.iconMarginHorizontal} />
       case 'InternalDevice':
         return <InternalDeviceIcon className={classes.iconMarginHorizontal} />
       case 'MBGatewayDevice':
         return <MBGatewayDeviceIcon className={classes.iconMarginHorizontal} />
       case 'MSAgentDevice':
-        return <MSAgentIcon className={classes.iconMarginHorizontal} />
+        return <MSAgentDeviceIcon className={classes.iconMarginHorizontal} />
+      case 'MSMQTTAgentDevice':
+        return <MQTTDeviceIcon className={classes.iconMarginHorizontal} />
       default:
         return <DeviceUnknownIcon className={classes.iconMarginHorizontal} />
     }
@@ -77,25 +80,25 @@ function SimpleList(props) {
       return (
         Object.values(deviceGroup).length > 0 ?
           <React.Fragment key={index}>
-            <List component="nav" aria-label="device-list" className={classes.list}>
-              {Object.values(deviceGroup).map((device, index) => {
-                const isActive = device.isConnected !== undefined ? device.isConnected && device.isActive : device.isActive;
-                return (
-                  <ListItem
-                    className={classes.listItem}
-                    key={index}
-                    button
-                    selected={selectedDevice.selectedDeviceID === device.id ? true : false}
-                    onClick={() => props.selectDevice(device.id, device.type)}>
-                    <ListItemIcon>
-                      <OnlineCircleIcon className={isActive ? classes.active : classes.inactive} />
-                      {deviceTypeIcon(device.type)}
-                    </ListItemIcon>
-                    <ListItemText primary={device.name} />
-                  </ListItem>
-                )
-              })}
-            </List>
+              <List component="nav" aria-label="device-list" className={classes.list}>
+                {Object.values(deviceGroup).map((device, index) => {
+                  const isActive = device.isConnected !== undefined ? device.isConnected && device.isActive : device.isActive;
+                  return (
+                    <ListItem
+                      className={classes.listItem}
+                      key={index}
+                      button
+                      selected={selectedDevice.selectedDeviceID === device.id ? true : false}
+                      onClick={() => props.selectDevice(device.id, device.type)}>
+                      <ListItemIcon>
+                        <OnlineCircleIcon className={isActive ? classes.active : classes.inactive} />
+                        {deviceTypeIcon(device.type)}
+                      </ListItemIcon>
+                      <ListItemText primary={device.name} />
+                    </ListItem>
+                  )
+                })}
+              </List>
             <Divider />
           </React.Fragment>
           : null
