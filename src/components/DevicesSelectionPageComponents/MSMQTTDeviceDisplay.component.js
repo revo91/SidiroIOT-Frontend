@@ -1,48 +1,53 @@
-import React from 'react';
-import UniversalTabs from '../UniversalTabs.component';
-import { UniversalTable } from '../UniversalTable.component';
-import { CollapsibleTable } from '../CollapsibleTable.component';
-import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { formatDateTime } from '../../utilities/formatDateTime.utility';
-import DeviceDetailsTitle from './DeviceDetailsTitle.component';
-import EdgeComputingTabContent from './EdgeComputingTabContent.component';
-import AlertsTabContent from './AlertsTabContent.component';
-import MSAgentBottomToolbar from './MSAgentBottomToolbar.component';
+import React from "react";
+import UniversalTabs from "../UniversalTabs.component";
+import { UniversalTable } from "../UniversalTable.component";
+import { CollapsibleTable } from "../CollapsibleTable.component";
+import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import { formatDateTime } from "../../utilities/formatDateTime.utility";
+import DeviceDetailsTitle from "./DeviceDetailsTitle.component";
+import EdgeComputingTabContent from "./EdgeComputingTabContent.component";
+import AlertsTabContent from "./AlertsTabContent.component";
+import MSAgentBottomToolbar from "./MSAgentBottomToolbar.component";
 
 const useStyles = makeStyles((theme) => ({
   topMargin: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   controlButtons: {
     marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(2)
-  }
+    marginTop: theme.spacing(2),
+  },
 }));
 
 function MSMQTTDeviceDisplay({ selectedDevice, allDevices, tableView }) {
   const { t } = useTranslation();
   const classes = useStyles();
-  const device = allDevices[selectedDevice.selectedDeviceID]
+  const device = allDevices[selectedDevice.selectedDeviceID];
 
   //this tab is 1 table only so this renders whole INFO TAB
   const renderInfoTabContent = () => {
-    if (tableView === 'simple') {
+    if (tableView === "simple") {
       return {
-        columns: [t('DevicesSelectionPage.Properties.genericParameterTableHeader'), t('DevicesSelectionPage.Properties.genericValueTableHeader')],
+        columns: [
+          t("DevicesSelectionPage.Properties.genericParameterTableHeader"),
+          t("DevicesSelectionPage.Properties.genericValueTableHeader"),
+        ],
         rows: [
           [t(`DevicesSelectionPage.Properties.name`), `${device.name}`],
           [t(`DevicesSelectionPage.Properties.boarded`), `${device.boarded}`],
-          [t(`DevicesSelectionPage.Properties.isActive`), `${device.isActive}`]
-        ]
-      }
-    }
-    else {
+          [t(`DevicesSelectionPage.Properties.isActive`), `${device.isActive}`],
+        ],
+      };
+    } else {
       return {
-        columns: [t('DevicesSelectionPage.Properties.genericParameterTableHeader'), t('DevicesSelectionPage.Properties.genericValueTableHeader')],
+        columns: [
+          t("DevicesSelectionPage.Properties.genericParameterTableHeader"),
+          t("DevicesSelectionPage.Properties.genericValueTableHeader"),
+        ],
         rows: [
           [t(`DevicesSelectionPage.Properties.name`), `${device.name}`],
           [t(`DevicesSelectionPage.Properties.type`), `${device.type}`],
@@ -50,174 +55,325 @@ function MSMQTTDeviceDisplay({ selectedDevice, allDevices, tableView }) {
           [t(`DevicesSelectionPage.Properties.isActive`), `${device.isActive}`],
           [t(`DevicesSelectionPage.Properties.mqttName`), `${device.mqttName}`],
           [t(`DevicesSelectionPage.Properties.clientId`), `${device.clientId}`],
-          [t(`DevicesSelectionPage.Properties.checkStateInterval`), `${device.checkStateInterval}`],
+          [
+            t(`DevicesSelectionPage.Properties.checkStateInterval`),
+            `${device.checkStateInterval}`,
+          ],
           [t(`DevicesSelectionPage.Properties.model`), `${device.model}`],
           [t(`DevicesSelectionPage.Properties.revision`), `${device.revision}`],
-          [t(`DevicesSelectionPage.Properties.tenantName`), `${device.tenantName}`],
-          [t(`DevicesSelectionPage.Properties.serialNumber`), `${device.serialNumber}`],
-          [t(`DevicesSelectionPage.Properties.mqttMessagesLimit`), `${device.mqttMessagesLimit}`],
-          [t(`DevicesSelectionPage.Properties.dataStorageSize`), `${device.dataStorageSize}`],
-          [t(`DevicesSelectionPage.Properties.eventStorageSize`), `${device.eventStorageSize}`],
-          [t(`DevicesSelectionPage.Properties.numberOfDataFilesToSend`), `${device.numberOfDataFilesToSend}`],
-          [t(`DevicesSelectionPage.Properties.numberOfEventFilesToSend`), `${device.numberOfEventFilesToSend}`],
-          [t(`DevicesSelectionPage.Properties.sendDataFileInterval`), `${device.sendDataFileInterval}`],
-          [t(`DevicesSelectionPage.Properties.sendEventFileInterval`), `${device.sendEventFileInterval}`]
-        ]
-      }
+          [
+            t(`DevicesSelectionPage.Properties.tenantName`),
+            `${device.tenantName}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.serialNumber`),
+            `${device.serialNumber}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.mqttMessagesLimit`),
+            `${device.mqttMessagesLimit}`,
+          ],
+          [t(`DevicesSelectionPage.Properties.qos`), `${device.qos}`],
+          [
+            t(`DevicesSelectionPage.Properties.publishTimeout`),
+            `${device.publishTimeout}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.reconnectInterval`),
+            `${device.reconnectInterval}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.dataStorageSize`),
+            `${device.dataStorageSize}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.eventStorageSize`),
+            `${device.eventStorageSize}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.numberOfDataFilesToSend`),
+            `${device.numberOfDataFilesToSend}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.numberOfEventFilesToSend`),
+            `${device.numberOfEventFilesToSend}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.sendDataFileInterval`),
+            `${device.sendDataFileInterval}`,
+          ],
+          [
+            t(`DevicesSelectionPage.Properties.sendEventFileInterval`),
+            `${device.sendEventFileInterval}`,
+          ],
+        ],
+      };
     }
-  }
+  };
 
   //AssociatedVariable variables table inside VARIABLES TAB
   const renderAssociatedVariablesTable = (variables) => {
-    let rows = []
-    let cols = []
-    if (tableView === 'simple') {
-      cols = [t('DevicesSelectionPage.Properties.name'), t('DevicesSelectionPage.Properties.value'), t('DevicesSelectionPage.Properties.unit'), t('DevicesSelectionPage.Properties.lastValueTick')]
+    let rows = [];
+    let cols = [];
+    if (tableView === "simple") {
+      cols = [
+        t("DevicesSelectionPage.Properties.name"),
+        t("DevicesSelectionPage.Properties.value"),
+        t("DevicesSelectionPage.Properties.unit"),
+        t("DevicesSelectionPage.Properties.lastValueTick"),
+      ];
+    } else {
+      cols = [
+        t("DevicesSelectionPage.Properties.name"),
+        t("DevicesSelectionPage.Properties.type"),
+        t("DevicesSelectionPage.Properties.value"),
+        t("DevicesSelectionPage.Properties.unit"),
+        t("DevicesSelectionPage.Properties.defaultValue"),
+        t("DevicesSelectionPage.Properties.sampleTime"),
+        t("DevicesSelectionPage.Properties.associatedDeviceIDName"),
+        t("DevicesSelectionPage.Properties.associatedElementIDName"),
+        t("DevicesSelectionPage.Properties.lastValueTick"),
+      ];
     }
-    else {
-      cols = [t('DevicesSelectionPage.Properties.name'),
-      t('DevicesSelectionPage.Properties.type'),
-      t('DevicesSelectionPage.Properties.value'),
-      t('DevicesSelectionPage.Properties.unit'),
-      t('DevicesSelectionPage.Properties.defaultValue'),
-      t('DevicesSelectionPage.Properties.sampleTime'),
-      t('DevicesSelectionPage.Properties.associatedDeviceIDName'),
-      t('DevicesSelectionPage.Properties.associatedElementIDName'),
-      t('DevicesSelectionPage.Properties.lastValueTick'),
-      ]
-    }
-    variables.forEach(variable => {
+    variables.forEach((variable) => {
       //associate associatedDeviceID with corresponding device name and associatedElementID with its property name
       variable = {
         ...variable,
-        associatedDeviceIDName: allDevices[variable.associatedDeviceID] !== undefined ? allDevices[variable.associatedDeviceID].name : '',
-        associatedElementIDName: allDevices[variable.associatedDeviceID] !== undefined && allDevices[variable.associatedDeviceID].variables[variable.associatedElementID] !== undefined ? allDevices[variable.associatedDeviceID].variables[variable.associatedElementID].name : ''
+        associatedDeviceIDName:
+          allDevices[variable.associatedDeviceID] !== undefined
+            ? allDevices[variable.associatedDeviceID].name
+            : "",
+        associatedElementIDName:
+          allDevices[variable.associatedDeviceID] !== undefined &&
+          allDevices[variable.associatedDeviceID].variables[
+            variable.associatedElementID
+          ] !== undefined
+            ? allDevices[variable.associatedDeviceID].variables[
+                variable.associatedElementID
+              ].name
+            : "",
+      };
+      if (tableView === "simple") {
+        rows.push([
+          variable.name,
+          variable.value,
+          variable.unit,
+          variable.lastValueTick,
+        ]);
+      } else {
+        rows.push([
+          variable.name,
+          variable.type,
+          variable.value,
+          variable.unit,
+          variable.defaultValue,
+          variable.sampleTime,
+          variable.associatedDeviceIDName,
+          variable.associatedElementIDName,
+          variable.lastValueTick,
+        ]);
       }
-      if (tableView === 'simple') {
-        rows.push([variable.name, variable.value, variable.unit, variable.lastValueTick])
-      }
-      else {
-        rows.push([variable.name, variable.type, variable.value, variable.unit, variable.defaultValue, variable.sampleTime, variable.associatedDeviceIDName, variable.associatedElementIDName, variable.lastValueTick])
-      }
-    })
+    });
 
-    return <UniversalTable columns={cols} rows={rows} className={classes.bottomMargin} />
-  }
+    return (
+      <UniversalTable
+        columns={cols}
+        rows={rows}
+        className={classes.bottomMargin}
+      />
+    );
+  };
 
   //rendering whole VARIABLES TAB
   const renderVariablesTabContent = () => {
-    //group AssociatedVariable variables in one table and rest in other table 
+    //group AssociatedVariable variables in one table and rest in other table
     //lastValueTick in order to avoid further processing duplicates in separate functions
-    const variables = Object.values(device.variables).map(variable => {
+    const variables = Object.values(device.variables).map((variable) => {
       return {
         ...variable,
-        value: !isNaN(variable.value) ? parseFloat(variable.value).toFixed(3) : `${variable.value}`,
-        lastValueTick: variable.lastValueTick === 0 ? '' : formatDateTime(new Date(parseFloat(variable.lastValueTick) * 1000))
-      }
-    })
+        value: !isNaN(variable.value)
+          ? parseFloat(variable.value).toFixed(3)
+          : `${variable.value}`,
+        lastValueTick:
+          variable.lastValueTick === 0
+            ? ""
+            : formatDateTime(
+                new Date(parseFloat(variable.lastValueTick) * 1000)
+              ),
+      };
+    });
 
-    const associatedVariables = variables.filter(variable => variable.type === 'AssociatedVariable')
+    const associatedVariables = variables.filter(
+      (variable) => variable.type === "AssociatedVariable"
+    );
 
     return (
       <React.Fragment>
-        {associatedVariables.length > 0 ?
+        {associatedVariables.length > 0 ? (
           <React.Fragment>
-            <Typography variant="h6" className={classes.topMargin}>{t('DevicesSelectionPage.Properties.AssociatedVariable')}</Typography>
+            <Typography variant="h6" className={classes.topMargin}>
+              {t("DevicesSelectionPage.Properties.AssociatedVariable")}
+            </Typography>
             {renderAssociatedVariablesTable(associatedVariables)}
           </React.Fragment>
-          : null}
+        ) : null}
       </React.Fragment>
-    )
-  }
+    );
+  };
 
   //render DATA SENT TAB CONTENT
   //this tab is 1 table only so this renders whole DATA SENT TAB
   const renderDataSentTabContent = () => {
-    let rows = []
-    let cols = []
-    let collapsedRows = []
-    let collapsedCols = []
-    let rowToBeCollapsed = []
+    let rows = [];
+    let cols = [];
+    let collapsedRows = [];
+    let collapsedCols = [];
+    let rowToBeCollapsed = [];
 
-    if (tableView === 'simple') {
-      cols = [t('DevicesSelectionPage.Properties.deviceName'), t('DevicesSelectionPage.Properties.elementName'), t('DevicesSelectionPage.Properties.sendingInterval')]
-    }
-    else {
+    if (tableView === "simple") {
+      cols = [
+        t("DevicesSelectionPage.Properties.deviceName"),
+        t("DevicesSelectionPage.Properties.elementName"),
+        t("DevicesSelectionPage.Properties.sendingInterval"),
+      ];
+    } else {
       //push collapsed cols
-      collapsedCols = [t('DevicesSelectionPage.Properties.conversionType'), t('DevicesSelectionPage.Properties.precision')]
+      collapsedCols = [
+        t("DevicesSelectionPage.Properties.conversionType"),
+        t("DevicesSelectionPage.Properties.precision"),
+      ];
 
-      cols = [t('DevicesSelectionPage.Properties.deviceName'),
-      t('DevicesSelectionPage.Properties.elementName'),
-      t('DevicesSelectionPage.Properties.variableName'),
-      t('DevicesSelectionPage.Properties.unit'),
-      t('DevicesSelectionPage.Properties.groupName'),
-      t('DevicesSelectionPage.Properties.sendingInterval'),
-      ]
+      cols = [
+        t("DevicesSelectionPage.Properties.deviceName"),
+        t("DevicesSelectionPage.Properties.elementName"),
+        t("DevicesSelectionPage.Properties.variableName"),
+        t("DevicesSelectionPage.Properties.unit"),
+        t("DevicesSelectionPage.Properties.groupName"),
+        t("DevicesSelectionPage.Properties.sendingInterval"),
+      ];
     }
     Object.values(device.dataToSendConfig).forEach((dataConfig, i) => {
-      collapsedRows = []
+      collapsedRows = [];
       //associate deviceId with corresponding device name and elementId with its variable's name
       dataConfig = {
         ...dataConfig,
-        associatedDeviceIDName: allDevices[dataConfig.deviceId] !== undefined ? allDevices[dataConfig.deviceId].name : '',
-        associatedElementIDName: allDevices[dataConfig.deviceId] !== undefined && allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !== undefined ? allDevices[dataConfig.deviceId].variables[dataConfig.elementId].name : ''
-      }
-      if (tableView === 'simple') {
-        rows.push([dataConfig.associatedDeviceIDName, dataConfig.associatedElementIDName, dataConfig.sendingInterval])
-      }
-      else {
+        associatedDeviceIDName:
+          allDevices[dataConfig.deviceId] !== undefined
+            ? allDevices[dataConfig.deviceId].name
+            : "",
+        associatedElementIDName:
+          allDevices[dataConfig.deviceId] !== undefined &&
+          allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !==
+            undefined
+            ? allDevices[dataConfig.deviceId].variables[dataConfig.elementId]
+                .name
+            : "",
+      };
+      if (tableView === "simple") {
+        rows.push([
+          dataConfig.associatedDeviceIDName,
+          dataConfig.associatedElementIDName,
+          dataConfig.sendingInterval,
+        ]);
+      } else {
         //push dataConverter's properties contents into collapsed table
-        collapsedRows.push([dataConfig.dataConverter.conversionType, dataConfig.dataConverter.precision])
-        rowToBeCollapsed.push({ rowIndex: i, content: <UniversalTable small noElevation columns={collapsedCols} rows={collapsedRows} /> })
+        collapsedRows.push([
+          dataConfig.dataConverter.conversionType,
+          dataConfig.dataConverter.precision,
+        ]);
+        rowToBeCollapsed.push({
+          rowIndex: i,
+          content: (
+            <UniversalTable
+              small
+              noElevation
+              columns={collapsedCols}
+              rows={collapsedRows}
+            />
+          ),
+        });
 
-        rows.push([dataConfig.associatedDeviceIDName, dataConfig.associatedElementIDName, dataConfig.variableName, dataConfig.variableUnit, dataConfig.groupName, dataConfig.sendingInterval])
+        rows.push([
+          dataConfig.associatedDeviceIDName,
+          dataConfig.associatedElementIDName,
+          dataConfig.variableName,
+          dataConfig.variableUnit,
+          dataConfig.groupName,
+          dataConfig.sendingInterval,
+        ]);
       }
-    })
+    });
 
-    return tableView === 'simple' ? <UniversalTable columns={cols} rows={rows} /> :
+    return tableView === "simple" ? (
+      <UniversalTable columns={cols} rows={rows} />
+    ) : (
       <CollapsibleTable
         columns={cols}
         rows={rows}
         collapsedRows={rowToBeCollapsed}
-        name='MSAgentDataSent'
+        name="MSAgentDataSent"
       />
-  }
+    );
+  };
 
   //render EVENTS SENT TAB CONTENT
   //this tab is 1 table only so this renders whole EVENTS SENT TAB
   const renderEventsSentTabContent = () => {
-    let rows = []
-    let cols = []
+    let rows = [];
+    let cols = [];
 
-    if (tableView === 'simple') {
-      cols = [t('DevicesSelectionPage.Properties.deviceName'), t('DevicesSelectionPage.Properties.elementName'), t('DevicesSelectionPage.Properties.sendingInterval')]
-    }
-    else {
-      cols = [t('DevicesSelectionPage.Properties.deviceName'),
-      t('DevicesSelectionPage.Properties.elementName'),
-      t('DevicesSelectionPage.Properties.sendingInterval'),
-      t('DevicesSelectionPage.Properties.severity'),
-      t('DevicesSelectionPage.Properties.eventName'),
-      t('DevicesSelectionPage.Properties.eventType')
-      ]
+    if (tableView === "simple") {
+      cols = [
+        t("DevicesSelectionPage.Properties.deviceName"),
+        t("DevicesSelectionPage.Properties.elementName"),
+        t("DevicesSelectionPage.Properties.sendingInterval"),
+      ];
+    } else {
+      cols = [
+        t("DevicesSelectionPage.Properties.deviceName"),
+        t("DevicesSelectionPage.Properties.elementName"),
+        t("DevicesSelectionPage.Properties.sendingInterval"),
+        t("DevicesSelectionPage.Properties.severity"),
+        t("DevicesSelectionPage.Properties.eventName"),
+        t("DevicesSelectionPage.Properties.eventType"),
+      ];
     }
     Object.values(device.eventsToSendConfig).forEach((eventConfig, i) => {
       //associate deviceId with corresponding device name and elementId with its variable's name
       eventConfig = {
         ...eventConfig,
-        associatedDeviceIDName: allDevices[eventConfig.deviceId] !== undefined ? allDevices[eventConfig.deviceId].name : '',
-        associatedElementIDName: allDevices[eventConfig.deviceId] !== undefined && allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !== undefined ? allDevices[eventConfig.deviceId].alerts[eventConfig.elementId].name : '',
+        associatedDeviceIDName:
+          allDevices[eventConfig.deviceId] !== undefined
+            ? allDevices[eventConfig.deviceId].name
+            : "",
+        associatedElementIDName:
+          allDevices[eventConfig.deviceId] !== undefined &&
+          allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !==
+            undefined
+            ? allDevices[eventConfig.deviceId].alerts[eventConfig.elementId]
+                .name
+            : "",
+      };
+      if (tableView === "simple") {
+        rows.push([
+          eventConfig.associatedDeviceIDName,
+          eventConfig.associatedElementIDName,
+          eventConfig.sendingInterval,
+        ]);
+      } else {
+        rows.push([
+          eventConfig.associatedDeviceIDName,
+          eventConfig.associatedElementIDName,
+          eventConfig.sendingInterval,
+          eventConfig.severity,
+          eventConfig.eventName,
+          eventConfig.eventType,
+        ]);
       }
-      if (tableView === 'simple') {
-        rows.push([eventConfig.associatedDeviceIDName, eventConfig.associatedElementIDName, eventConfig.sendingInterval])
-      }
-      else {
-        rows.push([eventConfig.associatedDeviceIDName, eventConfig.associatedElementIDName, eventConfig.sendingInterval, eventConfig.severity, eventConfig.eventName, eventConfig.eventType])
-      }
-    })
+    });
 
-    return <UniversalTable columns={cols} rows={rows} />
-  }
+    return <UniversalTable columns={cols} rows={rows} />;
+  };
 
   return (
     <React.Fragment>
@@ -225,7 +381,13 @@ function MSMQTTDeviceDisplay({ selectedDevice, allDevices, tableView }) {
         <Grid item xs={12}>
           <DeviceDetailsTitle />
         </Grid>
-        <Grid container item xs={12} spacing={1} className={classes.controlButtons}>
+        <Grid
+          container
+          item
+          xs={12}
+          spacing={1}
+          className={classes.controlButtons}
+        >
           <MSAgentBottomToolbar />
         </Grid>
         <Grid item xs={12}>
@@ -233,42 +395,49 @@ function MSMQTTDeviceDisplay({ selectedDevice, allDevices, tableView }) {
             name="MSAgentDevice"
             tabs={[
               {
-                label: t('DevicesSelectionPage.Tabs.info'),
-                content: <UniversalTable {...renderInfoTabContent()} />
+                label: t("DevicesSelectionPage.Tabs.info"),
+                content: <UniversalTable {...renderInfoTabContent()} />,
               },
               {
-                label: t('DevicesSelectionPage.Tabs.variables'),
-                content: renderVariablesTabContent()
+                label: t("DevicesSelectionPage.Tabs.variables"),
+                content: renderVariablesTabContent(),
               },
               {
-                label: t('DevicesSelectionPage.Tabs.calcElements'),
-                content: <EdgeComputingTabContent calcElementsObject={device.calcElements} />
+                label: t("DevicesSelectionPage.Tabs.calcElements"),
+                content: (
+                  <EdgeComputingTabContent
+                    calcElementsObject={device.calcElements}
+                  />
+                ),
               },
               {
-                label: t('DevicesSelectionPage.Tabs.alerts'),
-                content: <AlertsTabContent alertElementsObject={device.alerts} />
+                label: t("DevicesSelectionPage.Tabs.alerts"),
+                content: (
+                  <AlertsTabContent alertElementsObject={device.alerts} />
+                ),
               },
               {
-                label: t('DevicesSelectionPage.Tabs.dataToSendConfig'),
-                content: renderDataSentTabContent()
+                label: t("DevicesSelectionPage.Tabs.dataToSendConfig"),
+                content: renderDataSentTabContent(),
               },
               {
-                label: t('DevicesSelectionPage.Tabs.eventsToSendConfig'),
-                content: renderEventsSentTabContent()
-              }
-            ]} />
+                label: t("DevicesSelectionPage.Tabs.eventsToSendConfig"),
+                content: renderEventsSentTabContent(),
+              },
+            ]}
+          />
         </Grid>
       </Grid>
     </React.Fragment>
-  )
+  );
 }
 
 const mapStateToProps = (state) => {
   return {
     selectedDevice: state.DevicesListReducer,
     allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
+    tableView: state.DevicesSelectionPageReducer.tableView,
+  };
+};
 
-export default connect(mapStateToProps)(MSMQTTDeviceDisplay)
+export default connect(mapStateToProps)(MSMQTTDeviceDisplay);
