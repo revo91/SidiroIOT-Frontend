@@ -79,8 +79,8 @@ function MSMQTTDeviceDisplay({ selectedDevice, allDevices, tableView }) {
             `${device.publishTimeout}`,
           ],
           [
-            t(`DevicesSelectionPage.Properties.reconnectInterval`),
-            `${device.reconnectInterval}`,
+            t(`DevicesSelectionPage.Properties.connectTimeout`),
+            `${device.connectTimeout}`,
           ],
           [
             t(`DevicesSelectionPage.Properties.dataStorageSize`),

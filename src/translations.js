@@ -143,7 +143,7 @@ export const resources = {
           mqttMessagesLimit: "MQTT messages limit",
           qos: "Quality of service type",
           publishTimeout: "Publishing data timeout [ms]",
-          reconnectInterval: "MQTT Client reconnect interval [ms]",
+          connectTimeout: "Connecting to server timeout [ms]",
         },
       },
       SettingsPage: {
@@ -401,7 +401,7 @@ export const resources = {
           mqttMessagesLimit: "Limit wiadomości MQTT",
           qos: "Wykorzystywany QoS",
           publishTimeout: "Czas timeout wysłania danych [ms]",
-          reconnectInterval: "Interwał naprawiania połączenia [ms]",
+          connectTimeout: "Czas timeout połączenia [ms]",
         },
       },
       SettingsPage: {
