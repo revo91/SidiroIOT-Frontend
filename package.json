@@ -1,6 +1,7 @@
 {
   "name": "sidiro-iot",
   "version": "1.1.2",
+  "proxy": "http://192.168.1.244:5000",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.0",

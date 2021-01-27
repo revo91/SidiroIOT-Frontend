@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import FileService from '../services/file.service';
 import { setSnackbarText, setSnackbarShown } from '../actions/Snackbar.action';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import { setConfigFile, setIPConfiguration } from '../actions/Settings.action';
@@ -31,17 +31,20 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Settings({ setSnackbarText, setSnackbarShown, file, setConfigFile, setBackdropOpen, setBackdropClosed, setIPConfiguration, ipconfig, setIpConfigDialogOpen, setAllDevices, selectDevice }) {
+export default function Settings() {
   const classes = useStyles();
   const { t } = useTranslation()
+  const file = useSelector(state => state.SettingsReducer.file);
+  const ipconfig = useSelector(state => state.SettingsReducer.ipconfig);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     IPConfigService.getIpConfig().then(res => {
       if (res.status === 200) {
-        setIPConfiguration(res.data)
+        dispatch(setIPConfiguration(res.data))
       }
     })
-  }, [setIPConfiguration])
+  }, [dispatch])
 
   const getConfigFile = () => {
     FileService.downloadConfigFile().then(res => {
@@ -49,41 +52,41 @@ function Settings({ setSnackbarText, setSnackbarShown, file, setConfigFile, setB
         FileService.saveFileAs(res.data, 'projectSettings.json')
       }
       else if (res.status === 403) {
-        setSnackbarText(t('Snackbar.Generic403'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.Generic403'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
       else {
-        setSnackbarText(t('Snackbar.UnknownError'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnknownError'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
     })
   }
 
   const uploadFile = () => {
-    setBackdropOpen()
+    dispatch(setBackdropOpen())
     FileService.uploadConfigFile(file).then(res => {
-      setBackdropClosed()
+      dispatch(setBackdropClosed())
       //reset file after upload try
-      setConfigFile(null)
+      dispatch(setConfigFile(null))
 
       if (res.status === 200) {
-        setSnackbarText(t('Snackbar.SuccessfulFileUpload'), 'success')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.SuccessfulFileUpload'), 'success'))
+        dispatch(setSnackbarShown(true))
         //reset devices and selected device so they are refreshed on route open
-        setAllDevices([])
-        selectDevice(0, '', '')
+        dispatch(setAllDevices([]))
+        dispatch(selectDevice('', ''))
       }
       else if (res.status === 403) {
-        setSnackbarText(t('Snackbar.UnsuccessfulFileUpload403'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnsuccessfulFileUpload403'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
       else if (res.status === 400) {
-        setSnackbarText(t('Snackbar.UnsuccessfulFileUpload400'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnsuccessfulFileUpload400'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
       else {
-        setSnackbarText(t('Snackbar.UnknownError'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnknownError'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
     })
   }
@@ -91,7 +94,7 @@ function Settings({ setSnackbarText, setSnackbarShown, file, setConfigFile, setB
   const renderNetworkInterfaces = () => {
     return Object.entries(ipconfig).map((networkInterface, index) => {
       networkInterface = networkInterface[1]
-      return <Grow key={networkInterface.name} in={true} style={{ transformOrigin: '0 0 0' }} timeout={(index+1)*500}>
+      return <Grow key={networkInterface.name} in={true} style={{ transformOrigin: '0 0 0' }} timeout={(index + 1) * 500}>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <Card
             title={networkInterface.name}
@@ -104,11 +107,10 @@ function Settings({ setSnackbarText, setSnackbarShown, file, setConfigFile, setB
               {networkInterface.dns !== undefined && networkInterface.dns[1] !== undefined ? <Typography variant="body2" color="textSecondary" component="p">{t('IPConfigDialog.DNSSecondary')}: {networkInterface.dns[1]}</Typography> : null}
             </React.Fragment>}
             buttonText={t('SettingsPage.Edit')}
-            buttonAction={() => setIpConfigDialogOpen(true, networkInterface.name)} />
+            buttonAction={() => dispatch(setIpConfigDialogOpen(true, networkInterface.name))} />
         </Grid>
       </Grow>
     })
-
   }
 
   return (
@@ -131,7 +133,7 @@ function Settings({ setSnackbarText, setSnackbarShown, file, setConfigFile, setB
                   </tr>
                   <tr>
                     <td>{t('SettingsPage.FileSize')}&emsp;</td>
-                    <td>{(file.size/1024).toFixed(2)} kB</td>
+                    <td>{(file.size / 1024).toFixed(2)} kB</td>
                   </tr>
                 </tbody>
               </table>
@@ -148,7 +150,6 @@ function Settings({ setSnackbarText, setSnackbarShown, file, setConfigFile, setB
 
           </React.Fragment>
           : null}
-
         <Grid item xs={6} sm={6} md={4} lg={2}>
           <Button
             onClick={() => getConfigFile()}
@@ -169,24 +170,3 @@ function Settings({ setSnackbarText, setSnackbarShown, file, setConfigFile, setB
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    file: state.SettingsReducer.file,
-    ipconfig: state.SettingsReducer.ipconfig
-  }
-}
-
-const mapDispatchToProps = {
-  setSnackbarText,
-  setSnackbarShown,
-  setConfigFile,
-  setBackdropOpen,
-  setBackdropClosed,
-  setIPConfiguration,
-  setIpConfigDialogOpen,
-  setAllDevices,
-  selectDevice
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Settings);

@@ -10,7 +10,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import { setUniversalTabsNameIndex } from '../actions/UniversalTabs.action';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -63,43 +63,33 @@ export const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function ScrollableTabsButtonForce(props) {
+export default function ScrollableTabsButtonForce({ name, tabs }) {
   const classes = useStyles();
+  const tabsInstance = useSelector(state => state.UniversalTabsReducer);
+  const dispatch = useDispatch();
 
   return (
-    <div className={props.defaultMargin ? classes.defaultRoot : classes.root}>
+    <div className={classes.root}>
       <AppBar position="static" color="default" className={classes.noElevation}>
         <Tabs
-          value={props.tabsInstance[props.name] || 0}
-          onChange={(event, value)=>props.setUniversalTabsNameIndex(props.name, value)}
+          value={tabsInstance[name] || 0}
+          onChange={(event, value) => dispatch(setUniversalTabsNameIndex(name, value))}
           variant="scrollable"
           scrollButtons="auto"
           indicatorColor="secondary"
           textColor="secondary"
           aria-label="scrollable force tabs"
         >
-          {props.tabs.map((tab, i) => {
+          {tabs.map((tab, i) => {
             return <Tab key={`tab-${i}`} label={tab.label} {...a11yProps(i)} />
           })}
         </Tabs>
       </AppBar>
-      {props.tabs.map((tab, i) => {
-        return <TabPanel key={`tabpanel-${i}`} value={props.tabsInstance[props.name] || 0} index={i} className={classes.tabpanel}>
+      {tabs.map((tab, i) => {
+        return <TabPanel key={`tabpanel-${i}`} value={tabsInstance[name] || 0} index={i} className={classes.tabpanel}>
           {tab.content}
         </TabPanel>
       })}
     </div>
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    tabsInstance: state.UniversalTabsReducer
-  }
-}
-
-const mapDispatchToProps = {
-  setUniversalTabsNameIndex,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ScrollableTabsButtonForce)

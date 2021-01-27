@@ -2,7 +2,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import HighLimitAlertTable from './HighLimitAlertTable.component';
 import LowLimitAlertTable from './LowLimitAlertTable.component';
 import BandwidthLimitAlertTable from './BandwidthLimitAlertTable.component';
@@ -18,9 +18,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function EdgeComputingTabContent({ alertElementsObject, selectedDevice, allDevices }) {
+export default function EdgeComputingTabContent({ alertElementsObject }) {
   const { t } = useTranslation();
   const classes = useStyles();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+
   const device = allDevices[selectedDevice.selectedDeviceID]
 
   const alertValueConverter = (alertValue) => {
@@ -80,13 +83,3 @@ function EdgeComputingTabContent({ alertElementsObject, selectedDevice, allDevic
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(EdgeComputingTabContent)

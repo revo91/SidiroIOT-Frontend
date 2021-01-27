@@ -1,10 +1,11 @@
 import React from 'react';
 import { UniversalTable } from '../UniversalTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export function DeviceConnectionVariableTable({ deviceConnectionVariablesArray, tableView }) {
+export default function DeviceConnectionVariableTable({ deviceConnectionVariablesArray }) {
   const { t } = useTranslation();
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
 
   let rows = []
   let cols = []
@@ -31,11 +32,3 @@ export function DeviceConnectionVariableTable({ deviceConnectionVariablesArray, 
   })
   return <UniversalTable columns={cols} rows={rows} />
 }
-
-const mapStateToProps = (state) => {
-  return {
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(DeviceConnectionVariableTable)

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -23,7 +23,7 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DrawerRoutes from '../routes/DrawerRoutes.routes';
 import { setLanguageDialogOpen } from '../actions/LanguageDialog.action';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrochip, faMemory, faThermometerHalf, faHdd } from '@fortawesome/free-solid-svg-icons'
 import Badge from '@material-ui/core/Badge';
@@ -38,7 +38,6 @@ import worker from 'workerize-loader!../workers/hwinfo.worker'; //eslint-disable
 import PrivateRoute from '../routes/ProtectedUser.routes';
 import AuthService from "../services/auth.service";
 import { setAuthenticated } from '../actions/Authentication.action';
-import { setCreateAccountDialogOpen } from '../actions/CreateAccountDialog.action';
 import { isAdmin } from '../services/isAuthenticated.service';
 import CircularProgressWithLabel from './CircularProgress.component';
 import { setLoginFormUsername, setLoginFormPassword } from '../actions/LoginPage.action';
@@ -173,16 +172,18 @@ const useStyles = makeStyles((theme) => ({
 
 let instance;
 
-function MiniDrawer(props) {
+export default function MiniDrawer() {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const matches = useMediaQuery(`${theme.breakpoints.down('sm')} and (orientation: portrait)`)
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [bottomNaviValue, setBottomNaviValue] = React.useState(0);
-  const { setHardwareUsage, authenticated, setAuthenticated } = props;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [bottomNaviValue, setBottomNaviValue] = useState(0);
+  const hardwareUsage = useSelector(state => state.HardwareUsageReducer);
+  const authenticated = useSelector(state => state.AuthenticationReducer.authed);
+  const dispatch = useDispatch();
   let history = useHistory();
   let location = useLocation();
 
@@ -193,7 +194,7 @@ function MiniDrawer(props) {
     const setHardwareStats = (message) => {
       const { data } = message;
       if (data.cpuUsage !== undefined) {
-        setHardwareUsage(message.data.cpuUsage, message.data.cpuTemperature, message.data.ramUsage, message.data.diskUsage)
+        dispatch(setHardwareUsage(message.data.cpuUsage, message.data.cpuTemperature, message.data.ramUsage, message.data.diskUsage))
       }
     }
     if (instance === undefined) {
@@ -205,7 +206,7 @@ function MiniDrawer(props) {
       instance.removeEventListener("message", message => setHardwareStats(message))
       instance.terminate()
     }
-  }, [setHardwareUsage])
+  }, [dispatch]);
 
   useEffect(() => {
     setBottomNaviValue(location.pathname)
@@ -222,11 +223,11 @@ function MiniDrawer(props) {
   }, [authenticated])
 
   const signout = () => {
-    setAuthenticated(false)
+    dispatch(setAuthenticated(false))
     AuthService.logout()
     handleMenuClose()
-    props.setLoginFormUsername("")
-    props.setLoginFormPassword("")
+    dispatch(setLoginFormUsername(""))
+    dispatch(setLoginFormPassword(""))
     history.push('/login')
   }
 
@@ -311,7 +312,7 @@ function MiniDrawer(props) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <Badge badgeContent={`${toFixed(props.hardwareUsage.cpuUsage)}%`} color="primary" >
+        <Badge badgeContent={`${toFixed(hardwareUsage.cpuUsage)}%`} color="primary" >
           <IconButton aria-label="cpu usage" color="inherit" className={classes.hardwareUsage} >
             <FontAwesomeIcon icon={faMicrochip} />
           </IconButton>
@@ -319,7 +320,7 @@ function MiniDrawer(props) {
         <p>CPU</p>
       </MenuItem>
       <MenuItem>
-        <Badge badgeContent={`${toFixed(props.hardwareUsage.cpuTemperature)}°C`} color="primary">
+        <Badge badgeContent={`${toFixed(hardwareUsage.cpuTemperature)}°C`} color="primary">
           <IconButton aria-label="cpu temperature" color="inherit" className={classes.hardwareUsage}>
             <FontAwesomeIcon icon={faThermometerHalf} />
           </IconButton>
@@ -327,7 +328,7 @@ function MiniDrawer(props) {
         <p>TEMP</p>
       </MenuItem>
       <MenuItem>
-        <Badge badgeContent={`${toFixed(props.hardwareUsage.ramUsage)}%`} color="primary" >
+        <Badge badgeContent={`${toFixed(hardwareUsage.ramUsage)}%`} color="primary" >
           <IconButton aria-label="memory usage" color="inherit" className={classes.hardwareUsage}>
             <FontAwesomeIcon icon={faMemory} />
           </IconButton>
@@ -335,7 +336,7 @@ function MiniDrawer(props) {
         <p>MEM</p>
       </MenuItem>
       <MenuItem>
-        <Badge badgeContent={`${toFixed(props.hardwareUsage.diskUsage)}%`} color="primary">
+        <Badge badgeContent={`${toFixed(hardwareUsage.diskUsage)}%`} color="primary">
           <IconButton aria-label="space usage" color="inherit" className={classes.hardwareUsage}>
             <FontAwesomeIcon icon={faHdd} />
           </IconButton>
@@ -389,13 +390,13 @@ function MiniDrawer(props) {
 
                 <div className={classes.sectionDesktop}>
                   <Typography variant="body1">CPU</Typography>
-                  <CircularProgressWithLabel value={props.hardwareUsage.cpuUsage} unit="%" />
+                  <CircularProgressWithLabel value={hardwareUsage.cpuUsage} unit="%" />
                   <Typography variant="body1">TEMP</Typography>
-                  <CircularProgressWithLabel value={props.hardwareUsage.cpuTemperature} unit="°C" />
+                  <CircularProgressWithLabel value={hardwareUsage.cpuTemperature} unit="°C" />
                   <Typography variant="body1">MEM</Typography>
-                  <CircularProgressWithLabel value={props.hardwareUsage.ramUsage} unit="%" />
+                  <CircularProgressWithLabel value={hardwareUsage.ramUsage} unit="%" />
                   <Typography variant="body1">DISK</Typography>
-                  <CircularProgressWithLabel value={props.hardwareUsage.diskUsage} unit="%" />
+                  <CircularProgressWithLabel value={hardwareUsage.diskUsage} unit="%" />
                 </div>
                 <IconButton
                   className={classes.loginButton}
@@ -466,9 +467,8 @@ function MiniDrawer(props) {
                     </ListItem>
                   </React.Fragment>
                   : null}
-
                 <Divider />
-                <ListItem button onClick={() => props.setLanguageDialogOpen(true)}>
+                <ListItem button onClick={() => dispatch(setLanguageDialogOpen(true))}>
                   <ListItemIcon>
                     <LanguageIcon />
                   </ListItemIcon>
@@ -488,7 +488,7 @@ function MiniDrawer(props) {
               <BottomNavigationAction value="/" label={t('Drawer.Devices')} icon={<AccountTreeIcon />} component={Link} to="/" />
               {isAdmin() ? <BottomNavigationAction value="/settings" label={t('Drawer.Settings')} icon={<SettingsIcon />} component={Link} to="/settings" /> : null}
               {isAdmin() ? <BottomNavigationAction value="/logs" label={t('Drawer.Logs')} icon={<EventNoteIcon />} component={Link} to="/logs" /> : null}
-              <BottomNavigationAction label={t('Drawer.Language')} icon={<LanguageIcon />} onClick={() => props.setLanguageDialogOpen(true)} />
+              <BottomNavigationAction label={t('Drawer.Language')} icon={<LanguageIcon />} onClick={() => dispatch(setLanguageDialogOpen(true))} />
             </BottomNavigation>
           </React.Fragment>
         </PrivateRoute>
@@ -496,21 +496,3 @@ function MiniDrawer(props) {
     </div>
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    hardwareUsage: state.HardwareUsageReducer,
-    authenticated: state.AuthenticationReducer.authed
-  }
-}
-
-const mapDispatchToProps = {
-  setLanguageDialogOpen,
-  setHardwareUsage,
-  setAuthenticated,
-  setCreateAccountDialogOpen,
-  setLoginFormUsername,
-  setLoginFormPassword
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(MiniDrawer);

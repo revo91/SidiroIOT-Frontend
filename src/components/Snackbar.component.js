@@ -2,7 +2,7 @@ import React from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setSnackbarShown } from '../actions/Snackbar.action';
 
 function Alert(props) {
@@ -18,37 +18,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CustomizedSnackbars(props) {
-  
+export default function CustomizedSnackbars() {
   const classes = useStyles();
+  const text = useSelector(state => state.SnackbarReducer.text);
+  const shown = useSelector(state => state.SnackbarReducer.shown);
+  const severity = useSelector(state => state.SnackbarReducer.severity);
+  const dispatch = useDispatch();
+
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    props.setSnackbarShown(false);
+    dispatch(setSnackbarShown(false));
   };
 
   return (
     <div className={classes.root}>
-      <Snackbar open={props.shown} autoHideDuration={5000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={props.severity}>
-          {props.text}
+      <Snackbar open={shown} autoHideDuration={5000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={severity}>
+          {text}
         </Alert>
       </Snackbar>
     </div>
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    text: state.SnackbarReducer.text,
-    shown: state.SnackbarReducer.shown,
-    severity: state.SnackbarReducer.severity
-  }
-}
-
-const mapDispatchToProps = {
-  setSnackbarShown
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CustomizedSnackbars);

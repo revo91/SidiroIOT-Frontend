@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { toggleTableView } from '../../actions/DevicesSelectionPage.action';
@@ -18,9 +18,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function DeviceDetailsTitle({ selectedDevice, allDevices, toggleTableView, tableView }) {
+export default function DeviceDetailsTitle() {
   const classes = useStyles();
   const { t } = useTranslation();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
+  const dispatch = useDispatch();
+
   const device = allDevices[selectedDevice.selectedDeviceID]
 
   const checked = () => {
@@ -39,7 +44,7 @@ function DeviceDetailsTitle({ selectedDevice, allDevices, toggleTableView, table
         </Grid>
         <Grid item xs={12} sm={6} className={classes.switch}>
           <FormControlLabel
-            control={<Switch checked={checked()} onChange={() => toggleTableView()} />}
+            control={<Switch checked={checked()} onChange={() => dispatch(toggleTableView())} />}
             label={t('DevicesSelectionPage.TableSwitchAdvancedView')}
           />
         </Grid>
@@ -48,16 +53,3 @@ function DeviceDetailsTitle({ selectedDevice, allDevices, toggleTableView, table
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-const mapDispatchToProps = {
-  toggleTableView
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DeviceDetailsTitle)

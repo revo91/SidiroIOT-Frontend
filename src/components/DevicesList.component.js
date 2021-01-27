@@ -4,7 +4,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectDevice } from '../actions/DevicesList.action';
 import OnlineCircleIcon from '@material-ui/icons/FiberManualRecord';
 import DeviceUnknownIcon from '@material-ui/icons/DeviceUnknown';
@@ -44,16 +44,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function SimpleList(props) {
+export default function SimpleList() {
   const classes = useStyles();
-  const { allDevices, selectedDevice, selectDevice } = props;
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices)
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (selectedDevice.selectedDeviceID === '' && Object.keys(allDevices).length > 0) {
       const firstEntry = Object.entries(allDevices)[0]
-      selectDevice(firstEntry[1].id, firstEntry[1].type)
+      dispatch(selectDevice(firstEntry[1].id, firstEntry[1].type))
     }
-  }, [allDevices, selectDevice, selectedDevice])
+  }, [dispatch, allDevices, selectedDevice])
 
   const deviceTypeIcon = (type) => {
     switch (type) {
@@ -80,25 +82,25 @@ function SimpleList(props) {
       return (
         Object.values(deviceGroup).length > 0 ?
           <React.Fragment key={index}>
-              <List component="nav" aria-label="device-list" className={classes.list}>
-                {Object.values(deviceGroup).map((device, index) => {
-                  const isActive = device.isConnected !== undefined ? device.isConnected && device.isActive : device.isActive;
-                  return (
-                    <ListItem
-                      className={classes.listItem}
-                      key={index}
-                      button
-                      selected={selectedDevice.selectedDeviceID === device.id ? true : false}
-                      onClick={() => props.selectDevice(device.id, device.type)}>
-                      <ListItemIcon>
-                        <OnlineCircleIcon className={isActive ? classes.active : classes.inactive} />
-                        {deviceTypeIcon(device.type)}
-                      </ListItemIcon>
-                      <ListItemText primary={device.name} />
-                    </ListItem>
-                  )
-                })}
-              </List>
+            <List component="nav" aria-label="device-list" className={classes.list}>
+              {Object.values(deviceGroup).map((device, index) => {
+                const isActive = device.isConnected !== undefined ? device.isConnected && device.isActive : device.isActive;
+                return (
+                  <ListItem
+                    className={classes.listItem}
+                    key={index}
+                    button
+                    selected={selectedDevice.selectedDeviceID === device.id ? true : false}
+                    onClick={() => dispatch(selectDevice(device.id, device.type))}>
+                    <ListItemIcon>
+                      <OnlineCircleIcon className={isActive ? classes.active : classes.inactive} />
+                      {deviceTypeIcon(device.type)}
+                    </ListItemIcon>
+                    <ListItemText primary={device.name} />
+                  </ListItem>
+                )
+              })}
+            </List>
             <Divider />
           </React.Fragment>
           : null
@@ -112,16 +114,3 @@ function SimpleList(props) {
     </React.Fragment>
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices
-  }
-}
-
-const mapDispatchToProps = {
-  selectDevice
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SimpleList)

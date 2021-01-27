@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import Typography from '@material-ui/core/Typography';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setConfigFile } from '../actions/Settings.action';
 
 const useStyles = makeStyles((theme) => ({
@@ -12,17 +12,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Dropzone({ setConfigFile }) {
+export default function Dropzone() {
   const classes = useStyles();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const onDrop = useCallback(acceptedFiles => {
     // Do something with the files
-    setConfigFile(acceptedFiles[0])
-  }, [setConfigFile])
+    dispatch(setConfigFile(acceptedFiles[0]))
+  }, [dispatch])
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({ onDrop, accept: 'application/JSON' });
-
 
   const style = useMemo(() => {
     const baseStyle = {
@@ -74,9 +74,3 @@ function Dropzone({ setConfigFile }) {
     </section>
   );
 }
-
-const mapDispatchToProps = {
-  setConfigFile
-}
-
-export default connect(null, mapDispatchToProps)(Dropzone);

@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import ActivateService from '../../services/activate.service';
 import { refreshDeviceParams } from '../../actions/DevicesSelectionPage.action';
@@ -20,14 +20,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function StandardBottomToolbar({ selectedDevice, allDevices, refreshDeviceParams }) {
+export default function StandardBottomToolbar() {
   const { t } = useTranslation();
   const classes = useStyles();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+  const dispatch = useDispatch();
 
   const activateDevice = (activate, device) => {
     ActivateService.activateDevice(activate, device).then(res => {
       if (res.status === 200) {
-        refreshDeviceParams(res.data)
+        dispatch(refreshDeviceParams(res.data))
       }
     })
   }
@@ -55,16 +58,3 @@ function StandardBottomToolbar({ selectedDevice, allDevices, refreshDeviceParams
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices
-  }
-}
-
-const mapDispatchToProps = {
-  refreshDeviceParams
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(StandardBottomToolbar)

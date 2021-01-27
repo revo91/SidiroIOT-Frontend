@@ -6,20 +6,20 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-export default function MediaCard(props) {
+export default function MediaCard({ title, body, buttonText, buttonAction }) {
   return (
     <Card>
-      <CardActionArea onClick={props.buttonAction}>
+      <CardActionArea onClick={buttonAction}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            {props.title}
+            {title}
           </Typography>
-          {props.body}
+          {body}
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary" onClick={props.buttonAction}>
-          {props.buttonText}
+        <Button size="small" color="primary" onClick={buttonAction}>
+          {buttonText}
         </Button>
       </CardActions>
     </Card>

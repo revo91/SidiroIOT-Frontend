@@ -2,10 +2,11 @@ import React from 'react';
 import { UniversalTable } from '../UniversalTable.component';
 import {CollapsibleTable} from '../CollapsibleTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export function ExactValuesAlertTable({ exactValuesAlertArray, tableView }) {
+export default function ExactValuesAlertTable({ exactValuesAlertArray }) {
   const { t } = useTranslation();
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
 
   let rows = []
   let cols = []
@@ -72,13 +73,3 @@ export function ExactValuesAlertTable({ exactValuesAlertArray, tableView }) {
       name='ExactValuesAlertTable'
     />
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(ExactValuesAlertTable)

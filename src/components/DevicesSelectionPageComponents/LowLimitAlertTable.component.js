@@ -1,11 +1,12 @@
 import React from 'react';
 import { UniversalTable } from '../UniversalTable.component';
-import {CollapsibleTable} from '../CollapsibleTable.component';
+import { CollapsibleTable } from '../CollapsibleTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export function LowLimitAlertTable({ lowLimitAlertArray, tableView, allDevices, selectedDevice }) {
+export default function LowLimitAlertTable({ lowLimitAlertArray }) {
   const { t } = useTranslation();
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
 
   let rows = []
   let cols = []
@@ -44,19 +45,19 @@ export function LowLimitAlertTable({ lowLimitAlertArray, tableView, allDevices, 
       collapsedRows.push([lowLimitAlertElement.texts.pl, lowLimitAlertElement.texts.en])
 
       rowToBeCollapsed.push({ rowIndex: i, content: <UniversalTable small noElevation columns={collapsedCols} rows={collapsedRows} /> })
-      rows.push([lowLimitAlertElement.name, 
-        lowLimitAlertElement.type, 
-        lowLimitAlertElement.value, 
-        lowLimitAlertElement.unit, 
-        lowLimitAlertElement.defaultValue, 
-        lowLimitAlertElement.lowLimit, 
-        lowLimitAlertElement.hysteresis, 
-        lowLimitAlertElement.severity,
-        lowLimitAlertElement.sampleTime,
-        lowLimitAlertElement.timeOffDelay,
-        lowLimitAlertElement.timeOnDelay,
-        lowLimitAlertElement.variableName,
-        lowLimitAlertElement.lastValueTick])
+      rows.push([lowLimitAlertElement.name,
+      lowLimitAlertElement.type,
+      lowLimitAlertElement.value,
+      lowLimitAlertElement.unit,
+      lowLimitAlertElement.defaultValue,
+      lowLimitAlertElement.lowLimit,
+      lowLimitAlertElement.hysteresis,
+      lowLimitAlertElement.severity,
+      lowLimitAlertElement.sampleTime,
+      lowLimitAlertElement.timeOffDelay,
+      lowLimitAlertElement.timeOnDelay,
+      lowLimitAlertElement.variableName,
+      lowLimitAlertElement.lastValueTick])
     }
   })
   return tableView === 'simple' ? <UniversalTable columns={cols} rows={rows} /> :
@@ -67,13 +68,3 @@ export function LowLimitAlertTable({ lowLimitAlertArray, tableView, allDevices, 
       name='LowLimitAlertTable'
     />
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(LowLimitAlertTable)

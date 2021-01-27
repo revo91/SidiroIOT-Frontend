@@ -89,7 +89,7 @@ function DevicesSelectionPage(props) {
   //check if authenticated, if not - stop fetching
   useEffect(() => {
     if (instance !== null) {
-      if (authenticated === false) {
+      if (authenticated === false || selectedDevice.selectedDeviceID === '') {
         instance.postMessage({ token: null, text: 'stop' })
       }
       else {

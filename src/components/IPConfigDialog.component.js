@@ -14,7 +14,7 @@ import {
   setBackdropOpen,
   setBackdropClosed
 } from '../actions/Backdrop.action';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   setIpConfigDialogOpen,
   setIpConfigDialogIpAddress,
@@ -54,41 +54,31 @@ const useStyles = makeStyles((theme) => ({
 })
 )
 
-function IPConfigDialog({ open,
-  ipAddress,
-  subnetMask,
-  gateway,
-  name,
-  dhcp,
-  dnsPrimary,
-  dnsSecondary,
-  ipConfig,
-  setIpConfigDialogOpen,
-  setIpConfigDialogIpAddress,
-  setIpConfigDialogSubnetMask,
-  setIpConfigDialogGateway,
-  setIpConfigDialogDHCP,
-  setIpConfigDialogDNSPrimary,
-  setIpConfigDialogDNSSecondary,
-  setBackdropOpen,
-  setBackdropClosed,
-  setSnackbarText,
-  setSnackbarShown,
-  setIPConfiguration
-}) {
-
-  useEffect(() => {
-    if (ipConfig[name] !== undefined) {
-      setIpConfigDialogIpAddress(ipConfig[name].ipAddress !== undefined ? ipConfig[name].ipAddress : '')
-      setIpConfigDialogSubnetMask(ipConfig[name].subnetMask !== undefined ? ipConfig[name].subnetMask : '')
-      setIpConfigDialogGateway(ipConfig[name].gateway !== undefined ? ipConfig[name].gateway : '')
-      setIpConfigDialogDHCP(ipConfig[name].dhcp !== undefined ? ipConfig[name].dhcp : false)
-      setIpConfigDialogDNSPrimary(ipConfig[name].dns !== undefined && ipConfig[name].dns[0] !== undefined ? ipConfig[name].dns[0] : '')
-      setIpConfigDialogDNSSecondary(ipConfig[name].dns !== undefined && ipConfig[name].dns[1] !== undefined ? ipConfig[name].dns[1] : '')
-    }
-  }, [open, setIpConfigDialogIpAddress, setIpConfigDialogSubnetMask, setIpConfigDialogGateway, setIpConfigDialogDHCP, setIpConfigDialogDNSPrimary, setIpConfigDialogDNSSecondary, ipConfig, name])
+export default function IPConfigDialog() {
   const classes = useStyles();
   const { t } = useTranslation()
+  const open = useSelector(state => state.IPConfigReducer.open);
+  const name = useSelector(state => state.IPConfigReducer.name);
+  const ipAddress = useSelector(state => state.IPConfigReducer.ipAddress);
+  const subnetMask = useSelector(state => state.IPConfigReducer.subnetMask);
+  const gateway = useSelector(state => state.IPConfigReducer.gateway);
+  const dhcp = useSelector(state => state.IPConfigReducer.dhcp);
+  const dnsPrimary = useSelector(state => state.IPConfigReducer.dnsPrimary);
+  const dnsSecondary = useSelector(state => state.IPConfigReducer.dnsSecondary);
+  const ipConfig = useSelector(state => state.SettingsReducer.ipconfig);
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    if (ipConfig[name] !== undefined) {
+      dispatch(setIpConfigDialogIpAddress(ipConfig[name].ipAddress !== undefined ? ipConfig[name].ipAddress : ''))
+      dispatch(setIpConfigDialogSubnetMask(ipConfig[name].subnetMask !== undefined ? ipConfig[name].subnetMask : ''))
+      dispatch(setIpConfigDialogGateway(ipConfig[name].gateway !== undefined ? ipConfig[name].gateway : ''))
+      dispatch(setIpConfigDialogDHCP(ipConfig[name].dhcp !== undefined ? ipConfig[name].dhcp : false))
+      dispatch(setIpConfigDialogDNSPrimary(ipConfig[name].dns !== undefined && ipConfig[name].dns[0] !== undefined ? ipConfig[name].dns[0] : ''))
+      dispatch(setIpConfigDialogDNSSecondary(ipConfig[name].dns !== undefined && ipConfig[name].dns[1] !== undefined ? ipConfig[name].dns[1] : ''))
+    }
+  }, [open, ipConfig, name, dispatch])
+
 
   const handleChange = (event) => {
     const val = event.target.value;
@@ -96,22 +86,22 @@ function IPConfigDialog({ open,
 
     switch (name) {
       case 'ip-address':
-        setIpConfigDialogIpAddress(val)
+        dispatch(setIpConfigDialogIpAddress(val))
         break;
       case 'subnet-mask':
-        setIpConfigDialogSubnetMask(val)
+        dispatch(setIpConfigDialogSubnetMask(val))
         break;
       case 'gateway':
-        setIpConfigDialogGateway(val)
+        dispatch(setIpConfigDialogGateway(val))
         break;
       case 'dhcp':
-        setIpConfigDialogDHCP(event.target.checked)
+        dispatch(setIpConfigDialogDHCP(event.target.checked))
         break;
       case 'dns-primary':
-        setIpConfigDialogDNSPrimary(val)
+        dispatch(setIpConfigDialogDNSPrimary(val))
         break;
       case 'dns-secondary':
-        setIpConfigDialogDNSSecondary(val)
+        dispatch(setIpConfigDialogDNSSecondary(val))
         break;
       default:
         break;
@@ -120,8 +110,8 @@ function IPConfigDialog({ open,
 
 
   const apiWithTimeout = (httpReq, milliseconds) => {
-    setIpConfigDialogOpen(false)
-    setBackdropOpen()
+    dispatch(setIpConfigDialogOpen(false))
+    dispatch(setBackdropOpen())
     return new Promise(function (resolve, reject) {
       setTimeout(function () {
         reject(new Error("Data fetch failed in " + milliseconds + " ms"))
@@ -161,21 +151,21 @@ function IPConfigDialog({ open,
     apiWithTimeout(IPConfigService.setIpConfig(name, config), 10000).then(res => {
       IPConfigService.getIpConfig().then(res => {
         if (res.status === 200) {
-          setIPConfiguration(res.data)
+          dispatch(setIPConfiguration(res.data))
         }
       })
-      setBackdropClosed()
+      dispatch(setBackdropClosed())
       if (res.status === 200) {
-        setSnackbarText(t('Snackbar.SuccessfulIPConfig'), 'success')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.SuccessfulIPConfig'), 'success'))
+        dispatch(setSnackbarShown(true))
       }
       else if (res.status === 400) {
-        setSnackbarText(t('Snackbar.UnsuccessfulIPConfig'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnsuccessfulIPConfig'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
       else {
-        setSnackbarText(t('Snackbar.UnknownError'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnknownError'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
     }).catch(() => {
       //if changing interface you're connected to
@@ -195,7 +185,7 @@ function IPConfigDialog({ open,
 
   return (
     <div>
-      <Dialog open={open} onClose={() => setIpConfigDialogOpen(false)} aria-labelledby="form-dialog-title" >
+      <Dialog open={open} onClose={() => dispatch(setIpConfigDialogOpen(false))} aria-labelledby="form-dialog-title" >
         <DialogTitle id="form-dialog-title">{t('IPConfigDialog.ChangeConfiguration')}</DialogTitle>
         <DialogContent>
           {ipConfig[name] !== undefined && ipConfig[name].ipAddress !== undefined && ipConfig[name].ipAddress === window.location.hostname ?
@@ -270,12 +260,11 @@ function IPConfigDialog({ open,
                 onChange={handleChange}
                 fullWidth
               />
-
             </div>
           </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIpConfigDialogOpen(false)} color="primary">
+          <Button onClick={() => dispatch(setIpConfigDialogOpen(false))} color="primary">
             {t('IPConfigDialog.CancelButton')}
           </Button>
           <Button onClick={() => setIpConfig()} color="primary">
@@ -284,36 +273,5 @@ function IPConfigDialog({ open,
         </DialogActions>
       </Dialog>
     </div>
-  );
+  )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    open: state.IPConfigReducer.open,
-    name: state.IPConfigReducer.name,
-    ipAddress: state.IPConfigReducer.ipAddress,
-    subnetMask: state.IPConfigReducer.subnetMask,
-    gateway: state.IPConfigReducer.gateway,
-    dhcp: state.IPConfigReducer.dhcp,
-    dnsPrimary: state.IPConfigReducer.dnsPrimary,
-    dnsSecondary: state.IPConfigReducer.dnsSecondary,
-    ipConfig: state.SettingsReducer.ipconfig
-  }
-}
-
-const mapDispatchToProps = {
-  setSnackbarText,
-  setSnackbarShown,
-  setBackdropOpen,
-  setBackdropClosed,
-  setIpConfigDialogOpen,
-  setIpConfigDialogIpAddress,
-  setIpConfigDialogSubnetMask,
-  setIpConfigDialogGateway,
-  setIpConfigDialogDHCP,
-  setIpConfigDialogDNSPrimary,
-  setIpConfigDialogDNSSecondary,
-  setIPConfiguration
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(IPConfigDialog);

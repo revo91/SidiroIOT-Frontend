@@ -2,10 +2,13 @@ import React from 'react';
 import { UniversalTable } from '../UniversalTable.component';
 import {CollapsibleTable} from '../CollapsibleTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export function SumCalculatorTable({ sumCalcElementsArray, selectedDevice, allDevices, tableView }) {
+export default function SumCalculatorTable({ sumCalcElementsArray }) {
   const { t } = useTranslation();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
   const device = allDevices[selectedDevice.selectedDeviceID]
 
   let rows = []
@@ -56,13 +59,3 @@ export function SumCalculatorTable({ sumCalcElementsArray, selectedDevice, allDe
       name='SumCalculatorTable'
     />
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(SumCalculatorTable)

@@ -1,11 +1,12 @@
 import React from 'react';
 import { UniversalTable } from '../UniversalTable.component';
-import {CollapsibleTable} from '../CollapsibleTable.component';
+import { CollapsibleTable } from '../CollapsibleTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export function BandwidthLimitAlertTable({ bandwidthLimitAlertArray, tableView }) {
+export default function BandwidthLimitAlertTable({ bandwidthLimitAlertArray }) {
   const { t } = useTranslation();
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
 
   let rows = []
   let cols = []
@@ -46,20 +47,20 @@ export function BandwidthLimitAlertTable({ bandwidthLimitAlertArray, tableView }
       collapsedRows.push([t('DevicesSelectionPage.Properties.lowLimit'), bandwidthLimitAlertElement.texts.lowLimit.pl, bandwidthLimitAlertElement.texts.lowLimit.en])
 
       rowToBeCollapsed.push({ rowIndex: i, content: <UniversalTable small noElevation columns={collapsedCols} rows={collapsedRows} /> })
-      rows.push([bandwidthLimitAlertElement.name, 
-        bandwidthLimitAlertElement.type, 
-        bandwidthLimitAlertElement.value, 
-        bandwidthLimitAlertElement.unit, 
-        bandwidthLimitAlertElement.defaultValue, 
-        bandwidthLimitAlertElement.highLimit, 
-        bandwidthLimitAlertElement.lowLimit,
-        bandwidthLimitAlertElement.hysteresis, 
-        bandwidthLimitAlertElement.severity,
-        bandwidthLimitAlertElement.sampleTime,
-        bandwidthLimitAlertElement.timeOffDelay,
-        bandwidthLimitAlertElement.timeOnDelay,
-        bandwidthLimitAlertElement.variableName,
-        bandwidthLimitAlertElement.lastValueTick])
+      rows.push([bandwidthLimitAlertElement.name,
+      bandwidthLimitAlertElement.type,
+      bandwidthLimitAlertElement.value,
+      bandwidthLimitAlertElement.unit,
+      bandwidthLimitAlertElement.defaultValue,
+      bandwidthLimitAlertElement.highLimit,
+      bandwidthLimitAlertElement.lowLimit,
+      bandwidthLimitAlertElement.hysteresis,
+      bandwidthLimitAlertElement.severity,
+      bandwidthLimitAlertElement.sampleTime,
+      bandwidthLimitAlertElement.timeOffDelay,
+      bandwidthLimitAlertElement.timeOnDelay,
+      bandwidthLimitAlertElement.variableName,
+      bandwidthLimitAlertElement.lastValueTick])
     }
   })
   return tableView === 'simple' ? <UniversalTable columns={cols} rows={rows} /> :
@@ -70,13 +71,3 @@ export function BandwidthLimitAlertTable({ bandwidthLimitAlertArray, tableView }
       name='BandwidthLimitAlertTable'
     />
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(BandwidthLimitAlertTable)

@@ -14,13 +14,13 @@ export default function CircularProgressWithLabel(props) {
         break;
       }
     }
-    var lower = percentColors[i - 1];
-    var upper = percentColors[i];
-    var range = upper.pct - lower.pct;
-    var rangePct = (pct - lower.pct) / range;
-    var pctLower = 1 - rangePct;
-    var pctUpper = rangePct;
-    var color = {
+    let lower = percentColors[i - 1];
+    let upper = percentColors[i];
+    let range = upper.pct - lower.pct;
+    let rangePct = (pct - lower.pct) / range;
+    let pctLower = 1 - rangePct;
+    let pctUpper = rangePct;
+    let color = {
       r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
       g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
       b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
@@ -28,22 +28,6 @@ export default function CircularProgressWithLabel(props) {
     return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
     // or output as hex if preferred
   };
-
-  // const useStyles = makeStyles((theme) => ({
-  //   usageGaugesGroup: {
-  //     marginRight: '20px',
-  //     marginLeft: '5px'
-  //   },
-  //   usageColor: {
-  //     position: 'absolute',
-  //     left: 0,
-  //     animationDuration: '1500ms',
-  //   },
-  //   bottom: {
-  //     color: '#eeeeee1c',
-  //   },
-  // }));
-  // const classes = useStyles();
 
   return (
     <div style={{ position: 'relative', display: 'inline-flex', marginRight: '20px', marginLeft: '5px' }}>
@@ -59,7 +43,6 @@ export default function CircularProgressWithLabel(props) {
       variant="static" {...props} 
       style={{position: 'absolute', animationDuration: '1500ms', color: getColorForPercentage(props.value / 100)}} />
       <div style={{position: 'absolute', display: 'flex', top: '0px', left: '0px', bottom: '0px', right: '0px', alignItems:"center", justifyContent:"center"}}>
-      
         <Typography variant="caption" component="div" color="initial">{`${Math.round(props.value,)}${props.unit}`}</Typography>
       </div>
     </div>

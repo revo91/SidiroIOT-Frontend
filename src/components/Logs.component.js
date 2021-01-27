@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useTranslation } from 'react-i18next';
 import TextField from '@material-ui/core/TextField';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setLogs } from '../actions/Logs.action';
 import LogsService from '../services/logs.service';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -33,10 +33,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Logs({ logs, setLogs, setBackdropOpen, setBackdropClosed }) {
+export default function Logs() {
   const [downloadButtonDisabled, setdownloadButtonDisabled] = useState(false)
   const { t } = useTranslation()
   const classes = useStyles();
+  const logs = useSelector(state => state.LogsReducer.logs);
+  const dispatch = useDispatch();
   const initialLogsNumber = 250;
 
   const downloadLogsFile = (filename, text) => {
@@ -50,10 +52,10 @@ function Logs({ logs, setLogs, setBackdropOpen, setBackdropClosed }) {
   }
 
   const getLogs = useCallback((getAll = false) => {
-    setBackdropOpen()
+    dispatch(setBackdropOpen())
     setdownloadButtonDisabled(true)
     LogsService.getLogs().then(res => {
-      setBackdropClosed()
+      dispatch(setBackdropClosed())
       setdownloadButtonDisabled(false)
       if (res.status === 200) {
         if (getAll) {
@@ -62,21 +64,21 @@ function Logs({ logs, setLogs, setBackdropOpen, setBackdropClosed }) {
         else {
           const parsedContent = parseLogs(res.data);
           const joinedString = parsedContent.filter((item, i) => i >= parsedContent.length - initialLogsNumber).join("\r\n");
-          setLogs(joinedString)
+          dispatch(setLogs(joinedString))
           const textarea = document.getElementById('logs-multiline');
           textarea.scrollTop = textarea.scrollHeight;
         }
       }
     })
-  }, [setLogs, setBackdropOpen, setBackdropClosed])
+  }, [dispatch])
 
   useEffect(() => {
     getLogs()
     //clear memory on route exit
     return () => {
-      setLogs(null)
+      dispatch(setLogs(null))
     }
-  }, [getLogs, setLogs])
+  }, [getLogs, dispatch])
 
   /**
  * @description Method for converting log file content to array of strings to display
@@ -117,7 +119,6 @@ function Logs({ logs, setLogs, setBackdropOpen, setBackdropClosed }) {
         }
       }
     }
-
     return logsToReturn;
   };
 
@@ -153,7 +154,7 @@ function Logs({ logs, setLogs, setBackdropOpen, setBackdropClosed }) {
             <Grow in={true} style={{ transformOrigin: '0 0 0' }} timeout={500}>
               <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                 <Button
-                disabled={downloadButtonDisabled}
+                  disabled={downloadButtonDisabled}
                   onClick={() => getLogs(true)}
                   fullWidth
                   variant="contained"
@@ -171,17 +172,3 @@ function Logs({ logs, setLogs, setBackdropOpen, setBackdropClosed }) {
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    logs: state.LogsReducer.logs
-  }
-}
-
-const mapDispatchToProps = {
-  setLogs,
-  setBackdropOpen,
-  setBackdropClosed
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Logs);

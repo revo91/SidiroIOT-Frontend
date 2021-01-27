@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import ActivateService from '../../services/activate.service';
@@ -20,14 +20,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function MSAgentBottomToolbar({ selectedDevice, allDevices, refreshDeviceParams }) {
+export default function MSAgentBottomToolbar() {
   const { t } = useTranslation();
   const classes = useStyles();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+  const dispatch = useDispatch();
 
   const activateDevice = (activate, device) => {
     ActivateService.activateDevice(activate, device).then(res => {
       if (res.status === 200) {
-        refreshDeviceParams(res.data)
+        dispatch(refreshDeviceParams(res.data))
       }
     })
   }
@@ -61,16 +64,3 @@ function MSAgentBottomToolbar({ selectedDevice, allDevices, refreshDeviceParams 
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices
-  }
-}
-
-const mapDispatchToProps = {
-  refreshDeviceParams
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(MSAgentBottomToolbar)

@@ -3,7 +3,7 @@ import UniversalTabs from '../UniversalTabs.component';
 import { UniversalTable } from '../UniversalTable.component';
 import { CollapsibleTable } from '../CollapsibleTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -23,9 +23,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
+export default function MSAgentDeviceDisplay() {
   const { t } = useTranslation();
   const classes = useStyles();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
+
   const device = allDevices[selectedDevice.selectedDeviceID]
 
   //this tab is 1 table only so this renders whole INFO TAB
@@ -265,13 +269,3 @@ function MSAgentDeviceDisplay({ selectedDevice, allDevices, tableView }) {
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(MSAgentDeviceDisplay)

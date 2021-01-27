@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setAccountFormCurrentPassword, setAccountFormNewPassword, setAccountFormRepeatedNewPassword } from '../actions/AccountPage.action';
 import { useTranslation } from 'react-i18next';
 import UserService from '../services/user.service';
@@ -29,9 +29,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPassword, setAccountFormNewPassword, setSnackbarText, setSnackbarShown, repeatedNewPassword, setAccountFormRepeatedNewPassword }) {
+export default function AccountPage() {
   const classes = useStyles();
   const { t } = useTranslation();
+  const currentPassword = useSelector(state => state.AccountPageReducer.currentPassword);
+  const newPassword = useSelector(state => state.AccountPageReducer.newPassword);
+  const repeatedNewPassword = useSelector(state => state.AccountPageReducer.repeatedNewPassword);
+  const dispatch = useDispatch();
   const [accountDetails, setAccountDetails] = useState({})
 
   const getMyAccountDetails = useCallback(() => {
@@ -40,24 +44,24 @@ function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPasswo
         setAccountDetails(res.data)
       }
       else {
-        setSnackbarText(t('Snackbar.UnknownError'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnknownError'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
     })
-  }, [setSnackbarShown, setSnackbarText, t])
+  }, [dispatch, t])
 
   useEffect(() => {
     getMyAccountDetails()
   }, [getMyAccountDetails])
 
-  useEffect(()=>{
+  useEffect(() => {
     //reset textfields on route exit
     return () => {
-      setAccountFormCurrentPassword('')
-      setAccountFormNewPassword('')
-      setAccountFormRepeatedNewPassword('')
+      dispatch(setAccountFormCurrentPassword(''))
+      dispatch(setAccountFormNewPassword(''))
+      dispatch(setAccountFormRepeatedNewPassword(''))
     }
-  },[setAccountFormCurrentPassword, setAccountFormNewPassword, setAccountFormRepeatedNewPassword])
+  }, [dispatch])
 
   const verify = (textfield) => {
     const lengthErrorText = t('AccountPage.PasswordHelperError8characters');
@@ -79,7 +83,7 @@ function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPasswo
           text: lengthErrorText
         }
       }
-      
+
     }
     if (newPassword !== repeatedNewPassword && newPassword.length >= 8 && repeatedNewPassword.length >= 8) {
       return {
@@ -97,14 +101,15 @@ function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPasswo
     UserService.editMyPassword(accountDetails.name, accountDetails.permissions, currentPassword, newPassword).then(res => {
       if (res.status === 200) {
         //reset fields after submit
-        setAccountFormCurrentPassword('')
-        setAccountFormNewPassword('')
-        setSnackbarText(t('Snackbar.SuccessfulPasswordChange'), 'success')
-        setSnackbarShown(true)
+        dispatch(setAccountFormCurrentPassword(''))
+        dispatch(setAccountFormNewPassword(''))
+        dispatch(setAccountFormRepeatedNewPassword(''))
+        dispatch(setSnackbarText(t('Snackbar.SuccessfulPasswordChange'), 'success'))
+        dispatch(setSnackbarShown(true))
       }
       else {
-        setSnackbarText(t('Snackbar.UnsuccessfulPasswordChange'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnsuccessfulPasswordChange'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
     })
   }
@@ -145,7 +150,7 @@ function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPasswo
                 type="password"
                 autoComplete="current-password"
                 value={currentPassword}
-                onChange={(e) => setAccountFormCurrentPassword(e.target.value)}
+                onChange={(e) => dispatch(setAccountFormCurrentPassword(e.target.value))}
                 fullWidth
                 label={t('AccountPage.CurrentPasswordTextField')}
               />
@@ -153,7 +158,7 @@ function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPasswo
                 type="password"
                 autoComplete="new-password"
                 value={newPassword}
-                onChange={(e) => setAccountFormNewPassword(e.target.value)}
+                onChange={(e) => dispatch(setAccountFormNewPassword(e.target.value))}
                 fullWidth
                 label={t('AccountPage.NewPasswordTextField')}
                 helperText={verify('newPassword').text}
@@ -162,7 +167,7 @@ function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPasswo
                 type="password"
                 autoComplete="repeat-new-password"
                 value={repeatedNewPassword}
-                onChange={(e) => setAccountFormRepeatedNewPassword(e.target.value)}
+                onChange={(e) => dispatch(setAccountFormRepeatedNewPassword(e.target.value))}
                 fullWidth
                 label={t('AccountPage.RepeatNewPasswordTextField')}
                 helperText={verify('repeatNewPassword').text}
@@ -173,34 +178,16 @@ function AccountPage({ currentPassword, newPassword, setAccountFormCurrentPasswo
         </Grid>
         <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
           <Button onClick={() => changePassword()}
-            className={classes.loginButton} fullWidth color="primary" variant="contained" disabled={currentPassword.length === 0 
-            || newPassword.length === 0 
-            || repeatedNewPassword.length === 0
-            || verify('newPassword').error 
-            || verify('currentPassword').error
-            || verify('repeatNewPassword').error}>
-              {t('AccountPage.ChangePasswordButton')}
-              </Button>
+            className={classes.loginButton} fullWidth color="primary" variant="contained" disabled={currentPassword.length === 0
+              || newPassword.length === 0
+              || repeatedNewPassword.length === 0
+              || verify('newPassword').error
+              || verify('currentPassword').error
+              || verify('repeatNewPassword').error}>
+            {t('AccountPage.ChangePasswordButton')}
+          </Button>
         </Grid>
       </Grid>
     </div>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    currentPassword: state.AccountPageReducer.currentPassword,
-    newPassword: state.AccountPageReducer.newPassword,
-    repeatedNewPassword: state.AccountPageReducer.repeatedNewPassword
-  }
-}
-
-const mapDispatchToProps = {
-  setAccountFormCurrentPassword,
-  setAccountFormNewPassword,
-  setSnackbarText,
-  setSnackbarShown,
-  setAccountFormRepeatedNewPassword
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AccountPage);

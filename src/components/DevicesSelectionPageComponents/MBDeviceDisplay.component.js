@@ -2,7 +2,7 @@ import React from 'react';
 import UniversalTabs from '../UniversalTabs.component';
 import { UniversalTable } from '../UniversalTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import DeviceDetailsTitle from './DeviceDetailsTitle.component';
@@ -25,9 +25,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function MBDeviceDisplay({ selectedDevice, allDevices, tableView }) {
+export default function MBDeviceDisplay() {
   const { t } = useTranslation();
   const classes = useStyles();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
 
   const device = allDevices[selectedDevice.selectedDeviceID]
 
@@ -177,13 +180,3 @@ function MBDeviceDisplay({ selectedDevice, allDevices, tableView }) {
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(MBDeviceDisplay)

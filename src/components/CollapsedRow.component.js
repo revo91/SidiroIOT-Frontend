@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
@@ -21,23 +21,23 @@ const useRowStyles = makeStyles({
   },
 });
 
-function Row(props) {
-  const { row, collapsedContent, rowInstance, rowName, setCollapsibleTableInstance } = props;
+export default function Row({ row, collapsedContent, rowName }) {
   const classes = useRowStyles();
+  const rowInstance = useSelector(state => state.CollapsibleTableReducer);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (rowInstance[rowName] === undefined) {
-      setCollapsibleTableInstance(rowName, false)
+      dispatch(setCollapsibleTableInstance(rowName, false))
     }
-  }, [rowName, setCollapsibleTableInstance, rowInstance])
-
+  }, [rowName, dispatch, rowInstance])
 
   return (
     <React.Fragment>
       <TableRow className={classes.root}>
         <TableCell className={classes.expandArrow}>
           {collapsedContent !== null && collapsedContent !== undefined ?
-            <IconButton aria-label="expand row" size="small" onClick={() => setCollapsibleTableInstance(rowName, !rowInstance[rowName])}>
+            <IconButton aria-label="expand row" size="small" onClick={() => dispatch(setCollapsibleTableInstance(rowName, !rowInstance[rowName]))}>
               {rowInstance[rowName] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
             : null}
@@ -65,15 +65,3 @@ function Row(props) {
     </React.Fragment>
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    rowInstance: state.CollapsibleTableReducer
-  }
-}
-
-const mapDispatchToProps = {
-  setCollapsibleTableInstance
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Row)

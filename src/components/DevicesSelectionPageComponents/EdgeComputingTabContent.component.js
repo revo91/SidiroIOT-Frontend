@@ -2,7 +2,6 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
 import IncreaseCalculatorTable from './IncreaseCalculatorTable.component';
 import SumCalculatorTable from './SumCalculatorTable.component';
 import ExpressionCalculatorTable from './ExpressionCalculatorTable.component';
@@ -17,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function EdgeComputingTabContent({ calcElementsObject }) {
+export default function EdgeComputingTabContent({ calcElementsObject }) {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -81,5 +80,3 @@ function EdgeComputingTabContent({ calcElementsObject }) {
     </React.Fragment>
   )
 }
-
-export default connect()(EdgeComputingTabContent)

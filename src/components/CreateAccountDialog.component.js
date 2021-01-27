@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   setCreateAccountDialogOpen,
   setCreateAccountDialogNameTextfield,
@@ -43,45 +43,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CreateAccountDialog({ open,
-  type,
-  name,
-  nameError,
-  password,
-  passwordError,
-  permissions,
-  editAccountId,
-  setCreateAccountDialogOpen,
-  setCreateAccountDialogNameTextfield,
-  setCreateAccountDialogPasswordTextfield,
-  setCreateAccountDialogPermissionsSelect,
-  setCreateAccountDialogNameTextfieldError,
-  setCreateAccountDialogPasswordTextfieldError,
-  setSnackbarShown,
-  setSnackbarText,
-  setUserAccountsList }) {
-
+export default function CreateAccountDialog() {
   const classes = useStyles();
   const { t } = useTranslation();
   let history = useHistory();
+  const open = useSelector(state => state.CreateAccountDialog.open);
+  const name = useSelector(state => state.CreateAccountDialog.name);
+  const type = useSelector(state => state.CreateAccountDialog.type);
+  const nameError = useSelector(state => state.CreateAccountDialog.nameError);
+  const password = useSelector(state => state.CreateAccountDialog.password);
+  const passwordError = useSelector(state => state.CreateAccountDialog.passwordError);
+  const permissions = useSelector(state => state.CreateAccountDialog.permissions);
+  const editAccountId = useSelector(state => state.CreateAccountDialog.editAccountId);
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
     const val = event.target.value;
     const name = event.target.name;
-    setCreateAccountDialogPasswordTextfieldError(false)
-    setCreateAccountDialogNameTextfieldError(false)
+    dispatch(setCreateAccountDialogPasswordTextfieldError(false))
+    dispatch(setCreateAccountDialogNameTextfieldError(false))
 
     if (name === 'name') {
-      setCreateAccountDialogNameTextfield(val)
+      dispatch(setCreateAccountDialogNameTextfield(val))
     }
     else if (name === 'password') {
-      setCreateAccountDialogPasswordTextfield(val)
+      dispatch(setCreateAccountDialogPasswordTextfield(val))
     }
     else if (name === 'newpassword') {
-      setCreateAccountDialogNewpasswordTextfield(val)
+      dispatch(setCreateAccountDialogNewpasswordTextfield(val))
     }
     else {
-      setCreateAccountDialogPermissionsSelect(val)
+      dispatch(setCreateAccountDialogPermissionsSelect(val))
     }
   }
 
@@ -102,25 +94,25 @@ function CreateAccountDialog({ open,
   const register = () => {
     UserService.register(name, password, permissions).then(res => {
       if (res.status === 200) {
-        setSnackbarText(t('Snackbar.SuccessfulUserCreation'), 'success')
-        setSnackbarShown(true)
-        setCreateAccountDialogPasswordTextfield('')
-        setCreateAccountDialogNameTextfield('')
-        setCreateAccountDialogOpen(false)
+        dispatch(setSnackbarText(t('Snackbar.SuccessfulUserCreation'), 'success'))
+        dispatch(setSnackbarShown(true))
+        dispatch(setCreateAccountDialogPasswordTextfield(''))
+        dispatch(setCreateAccountDialogNameTextfield(''))
+        dispatch(setCreateAccountDialogOpen(false))
         UserService.getAllAccounts().then(res => {
-          setUserAccountsList(res.data)
+          dispatch(setUserAccountsList(res.data))
         })
       }
       else if (res.status === 403) {
-        setSnackbarText(t('Snackbar.Generic403'), 'error')
-        setSnackbarShown(true)
-        setCreateAccountDialogPasswordTextfield('')
-        setCreateAccountDialogNameTextfield('')
-        setCreateAccountDialogOpen(false)
+        dispatch(setSnackbarText(t('Snackbar.Generic403'), 'error'))
+        dispatch(setSnackbarShown(true))
+        dispatch(setCreateAccountDialogPasswordTextfield(''))
+        dispatch(setCreateAccountDialogNameTextfield(''))
+        dispatch(setCreateAccountDialogOpen(false))
       }
       else {
-        setCreateAccountDialogNameTextfieldError(true)
-        setCreateAccountDialogPasswordTextfieldError(true)
+        dispatch(setCreateAccountDialogNameTextfieldError(true))
+        dispatch(setCreateAccountDialogPasswordTextfieldError(true))
       }
     })
   }
@@ -128,13 +120,13 @@ function CreateAccountDialog({ open,
   const edit = () => {
     UserService.editAccount(editAccountId, name, permissions, password === '' ? false : password).then(res => {
       if (res.status === 200) {
-        setSnackbarText(t('Snackbar.SuccessfulUserEdit'), 'success')
-        setCreateAccountDialogPasswordTextfield('')
-        setCreateAccountDialogNameTextfield('')
-        setSnackbarShown(true)
-        setCreateAccountDialogOpen(false)
+        dispatch(setSnackbarText(t('Snackbar.SuccessfulUserEdit'), 'success'))
+        dispatch(setCreateAccountDialogPasswordTextfield(''))
+        dispatch(setCreateAccountDialogNameTextfield(''))
+        dispatch(setSnackbarShown(true))
+        dispatch(setCreateAccountDialogOpen(false))
         UserService.getAllAccounts().then(res => {
-          setUserAccountsList(res.data)
+          dispatch(setUserAccountsList(res.data))
         })
         //if edited account is currently logged in
         if (res._id === AuthService.getCurrentUser()._id) {
@@ -143,24 +135,24 @@ function CreateAccountDialog({ open,
         }
       }
       else if (res.status === 403) {
-        setSnackbarText(t('Snackbar.Generic403'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.Generic403'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
       else {
-        setSnackbarText(t('Snackbar.UnknownError'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnknownError'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
     })
   }
 
   const cancel = () => {
-    setCreateAccountDialogOpen(false)
-    setCreateAccountDialogPasswordTextfield('')
-    setCreateAccountDialogNameTextfield('')
+    dispatch(setCreateAccountDialogOpen(false))
+    dispatch(setCreateAccountDialogPasswordTextfield(''))
+    dispatch(setCreateAccountDialogNameTextfield(''))
   }
 
   return (
-    <Dialog open={open} onClose={() => setCreateAccountDialogOpen(false)} aria-labelledby="form-dialog-title">
+    <Dialog open={open} onClose={() => dispatch(setCreateAccountDialogOpen(false))} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">{type === 'create' ? t('CreateAccountDialog.TitleCreate') : t('CreateAccountDialog.TitleEdit')}</DialogTitle>
       <DialogContent>
         {type === 'edit' ?
@@ -228,30 +220,3 @@ function CreateAccountDialog({ open,
     </Dialog >
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    open: state.CreateAccountDialog.open,
-    type: state.CreateAccountDialog.type,
-    name: state.CreateAccountDialog.name,
-    nameError: state.CreateAccountDialog.nameError,
-    password: state.CreateAccountDialog.password,
-    passwordError: state.CreateAccountDialog.passwordError,
-    permissions: state.CreateAccountDialog.permissions,
-    editAccountId: state.CreateAccountDialog.editAccountId
-  }
-}
-
-const mapDispatchToProps = {
-  setCreateAccountDialogOpen,
-  setCreateAccountDialogNameTextfield,
-  setCreateAccountDialogPasswordTextfield,
-  setCreateAccountDialogPermissionsSelect,
-  setCreateAccountDialogNameTextfieldError,
-  setCreateAccountDialogPasswordTextfieldError,
-  setSnackbarText,
-  setSnackbarShown,
-  setUserAccountsList,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CreateAccountDialog);

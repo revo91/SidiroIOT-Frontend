@@ -1,11 +1,12 @@
 import React from 'react';
 import { UniversalTable } from '../UniversalTable.component';
-import {CollapsibleTable} from '../CollapsibleTable.component';
+import { CollapsibleTable } from '../CollapsibleTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export function HighLimitAlertTable({ highLimitAlertArray, tableView }) {
+export default function HighLimitAlertTable({ highLimitAlertArray }) {
   const { t } = useTranslation();
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
 
   let rows = []
   let cols = []
@@ -44,19 +45,19 @@ export function HighLimitAlertTable({ highLimitAlertArray, tableView }) {
       collapsedRows.push([highLimitAlertElement.texts.pl, highLimitAlertElement.texts.en])
 
       rowToBeCollapsed.push({ rowIndex: i, content: <UniversalTable small noElevation columns={collapsedCols} rows={collapsedRows} /> })
-      rows.push([highLimitAlertElement.name, 
-        highLimitAlertElement.type, 
-        highLimitAlertElement.value, 
-        highLimitAlertElement.unit, 
-        highLimitAlertElement.defaultValue, 
-        highLimitAlertElement.highLimit, 
-        highLimitAlertElement.hysteresis, 
-        highLimitAlertElement.severity,
-        highLimitAlertElement.sampleTime,
-        highLimitAlertElement.timeOffDelay,
-        highLimitAlertElement.timeOnDelay,
-        highLimitAlertElement.variableName,
-        highLimitAlertElement.lastValueTick])
+      rows.push([highLimitAlertElement.name,
+      highLimitAlertElement.type,
+      highLimitAlertElement.value,
+      highLimitAlertElement.unit,
+      highLimitAlertElement.defaultValue,
+      highLimitAlertElement.highLimit,
+      highLimitAlertElement.hysteresis,
+      highLimitAlertElement.severity,
+      highLimitAlertElement.sampleTime,
+      highLimitAlertElement.timeOffDelay,
+      highLimitAlertElement.timeOnDelay,
+      highLimitAlertElement.variableName,
+      highLimitAlertElement.lastValueTick])
     }
   })
   return tableView === 'simple' ? <UniversalTable columns={cols} rows={rows} /> :
@@ -67,13 +68,3 @@ export function HighLimitAlertTable({ highLimitAlertArray, tableView }) {
       name='HighLimitAlertTable'
     />
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(HighLimitAlertTable)

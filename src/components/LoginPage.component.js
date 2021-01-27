@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Fab from '@material-ui/core/Fab';
 import LanguageIcon from "@material-ui/icons/Language";
 import Zoom from '@material-ui/core/Zoom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setLanguageDialogOpen } from '../actions/LanguageDialog.action';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AuthService from "../services/auth.service";
@@ -63,27 +63,32 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function LoginPage(props) {
+export default function LoginPage() {
   const classes = useStyles();
   const { t } = useTranslation()
   const theme = useTheme();
   const matches = useMediaQuery(`${theme.breakpoints.down('sm')} and (orientation: landscape)`)
   let history = useHistory();
+  const login = useSelector(state => state.LoginPageReducer.username);
+  const loginError = useSelector(state => state.LoginPageReducer.usernameError);
+  const password = useSelector(state => state.LoginPageReducer.password);
+  const passwordError = useSelector(state => state.LoginPageReducer.passwordError);
+  const dispatch = useDispatch();
 
   const tryLogin = () => {
-    AuthService.login(props.login, props.password).then(() => {
+    AuthService.login(login, password).then(() => {
       history.push("/");
     }).catch(() => {
-      props.setLoginFormUsernameError(true)
-      props.setLoginFormPasswordError(true)
-      props.setLoginFormPassword("")
-      props.setSnackbarText(t('Snackbar.LoginFailed'), 'error')
-      props.setSnackbarShown(true)
+      dispatch(setLoginFormUsernameError(true))
+      dispatch(setLoginFormPasswordError(true))
+      dispatch(setLoginFormPassword(""))
+      dispatch(setSnackbarText(t('Snackbar.LoginFailed'), 'error'))
+      dispatch(setSnackbarShown(true))
     })
   }
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter' && props.login.length >= 1 && props.password.length >= 1) {
+    if (event.key === 'Enter' && login.length >= 1 && password.length >= 1) {
       tryLogin()
     }
   }
@@ -93,13 +98,13 @@ function LoginPage(props) {
   }
 
   const controlFormFields = (field, value) => {
-    props.setLoginFormUsernameError(false)
-    props.setLoginFormPasswordError(false)
+    dispatch(setLoginFormUsernameError(false))
+    dispatch(setLoginFormPasswordError(false))
     if (field === 'username') {
-      props.setLoginFormUsername(value)
+      dispatch(setLoginFormUsername(value))
     }
     else {
-      props.setLoginFormPassword(value)
+      dispatch(setLoginFormPassword(value))
     }
   }
 
@@ -119,12 +124,11 @@ function LoginPage(props) {
         unmountOnExit
       >
         <Tooltip title={t('LoginPage.Language')} placement="bottom">
-          <Fab aria-label="choose langauge" className={classes.fab} color="primary" onClick={() => props.setLanguageDialogOpen(true)}>
+          <Fab aria-label="choose langauge" className={classes.fab} color="primary" onClick={() => dispatch(setLanguageDialogOpen(true))}>
             <LanguageIcon />
           </Fab>
         </Tooltip>
       </Zoom>
-
       <Fade in={true}>
         <Grid className={matches ? classes.contentMobile : classes.contentDesktop}
           container
@@ -137,11 +141,11 @@ function LoginPage(props) {
             <img src={SiemensLogoPetrol} alt="Siemens Logo" className={classes.siemensLogo} />
           </Grid>
           <Grid container item xs={12} spacing={0}
-          direction="row"
-          justify="center"
-          alignItems="center"
-          alignContent="center"
-          className={classes.loginContainer}>
+            direction="row"
+            justify="center"
+            alignItems="center"
+            alignContent="center"
+            className={classes.loginContainer}>
             <Grid item xs={12} >
               <Typography align="center" variant="h2" gutterBottom>SidiroIOT</Typography>
             </Grid>
@@ -151,43 +155,21 @@ function LoginPage(props) {
             <Grid item xs={12} sm={8} md={6} lg={4} xl={3}>
               <form noValidate autoComplete="off" className={classes.form}>
                 <TextField
-                  error={props.loginError}
-                  value={props.login}
+                  error={loginError}
+                  value={login}
                   onChange={(e) => controlFormFields('username', e.target.value)}
                   id="login" label={t('LoginPage.FormLoginTextField')} fullWidth variant="standard" autoComplete="username" onKeyDown={handleKeyDown} />
                 <TextField
-                  error={props.passwordError}
-                  value={props.password}
+                  error={passwordError}
+                  value={password}
                   onChange={(e) => controlFormFields('password', e.target.value)}
                   id="password" type="password" label={t('LoginPage.FormPasswordTextField')} fullWidth variant="standard" autoComplete="password" onKeyDown={handleKeyDown} />
               </form>
-              <Button onClick={() => buttonLogin()} className={classes.loginButton} color="primary" variant="contained" fullWidth disabled={props.login.length < 1 || props.password.length < 1}>{t('LoginPage.LoginButton')}</Button>
+              <Button onClick={() => buttonLogin()} className={classes.loginButton} color="primary" variant="contained" fullWidth disabled={login.length < 1 || password.length < 1}>{t('LoginPage.LoginButton')}</Button>
             </Grid>
           </Grid>
-
         </Grid>
       </Fade>
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    login: state.LoginPageReducer.username,
-    loginError: state.LoginPageReducer.usernameError,
-    password: state.LoginPageReducer.password,
-    passwordError: state.LoginPageReducer.passwordError
-  }
-}
-
-const mapDispatchToProps = {
-  setLanguageDialogOpen,
-  setLoginFormPassword,
-  setLoginFormUsername,
-  setLoginFormUsernameError,
-  setLoginFormPasswordError,
-  setSnackbarText,
-  setSnackbarShown
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);

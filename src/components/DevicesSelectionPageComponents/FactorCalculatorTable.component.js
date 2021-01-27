@@ -1,10 +1,14 @@
 import React from 'react';
 import { UniversalTable } from '../UniversalTable.component';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-export function FactorCalculatorTable({ factorCalcElementsArray, selectedDevice, allDevices, tableView }) {
+export default function FactorCalculatorTable({ factorCalcElementsArray }) {
   const { t } = useTranslation();
+  const selectedDevice = useSelector(state => state.DevicesListReducer);
+  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
+  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
+
   const device = allDevices[selectedDevice.selectedDeviceID]
 
   let rows = []
@@ -42,13 +46,3 @@ export function FactorCalculatorTable({ factorCalcElementsArray, selectedDevice,
     <UniversalTable columns={cols} rows={rows} />
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    selectedDevice: state.DevicesListReducer,
-    allDevices: state.DevicesSelectionPageReducer.devices,
-    tableView: state.DevicesSelectionPageReducer.tableView
-  }
-}
-
-export default connect(mapStateToProps)(FactorCalculatorTable)

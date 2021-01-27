@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { UniversalTable } from './UniversalTable.component';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setUserAccountsList } from '../actions/UserAccountsPage.action';
 import UserService from '../services/user.service';
 import Typography from '@material-ui/core/Typography';
@@ -24,50 +24,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function UserAccountsPage({ setUserAccountsList,
-  setCreateAccountDialogOpen,
-  accountsList,
-  setConfirmDeleteUserDialogOpen,
-  setConfirmDeleteUserDialogUsername,
-  setCreateAccountDialogEditId,
-  setCreateAccountDialogPermissionsSelect,
-  setCreateAccountDialogNameTextfield,
-  setSnackbarText,
-  setSnackbarShown }) {
-
+export default function UserAccountsPage() {
   const { t } = useTranslation();
   const classes = useStyles();
+  const accountsList = useSelector(state => state.UserAccountsPageReducer.accountsList);
+  const dispatch = useDispatch();
 
   const getAllAccounts = useCallback(() => {
     UserService.getAllAccounts().then(res => {
       if (res.status === 200) {
-        setUserAccountsList(res.data)
+        dispatch(setUserAccountsList(res.data))
       }
       else if (res.status === 403) {
-        setSnackbarText(t('Snackbar.Generic403'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.Generic403'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
       else {
-        setSnackbarText(t('Snackbar.UnknownError'), 'error')
-        setSnackbarShown(true)
+        dispatch(setSnackbarText(t('Snackbar.UnknownError'), 'error'))
+        dispatch(setSnackbarShown(true))
       }
     })
-  }, [setUserAccountsList, setSnackbarShown, setSnackbarText, t])
+  }, [dispatch, t])
 
   useEffect(() => {
     getAllAccounts()
   }, [getAllAccounts])
 
   const deleteAcc = (id, username) => {
-    setConfirmDeleteUserDialogUsername(username, id)
-    setConfirmDeleteUserDialogOpen(true)
+    dispatch(setConfirmDeleteUserDialogUsername(username, id))
+    dispatch(setConfirmDeleteUserDialogOpen(true))
   }
 
   const editAcc = (id, name, permissions) => {
-    setCreateAccountDialogEditId(id)
-    setCreateAccountDialogNameTextfield(name)
-    setCreateAccountDialogPermissionsSelect(permissions)
-    setCreateAccountDialogOpen(true, 'edit')
+    dispatch(setCreateAccountDialogEditId(id))
+    dispatch(setCreateAccountDialogNameTextfield(name))
+    dispatch(setCreateAccountDialogPermissionsSelect(permissions))
+    dispatch(setCreateAccountDialogOpen(true, 'edit'))
   }
 
   const checkPermissions = (permissions) => {
@@ -115,7 +107,7 @@ function UserAccountsPage({ setUserAccountsList,
         }
         <Grid item xs={6} sm={4} md={3} lg={2}>
           <Button
-            onClick={() => setCreateAccountDialogOpen(true, 'create')}
+            onClick={() =>  dispatch(setCreateAccountDialogOpen(true, 'create'))}
             fullWidth
             variant="contained"
             color="primary"
@@ -128,23 +120,3 @@ function UserAccountsPage({ setUserAccountsList,
     </React.Fragment>
   )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    accountsList: state.UserAccountsPageReducer.accountsList,
-  }
-}
-
-const mapDispatchToProps = {
-  setUserAccountsList,
-  setCreateAccountDialogOpen,
-  setConfirmDeleteUserDialogOpen,
-  setConfirmDeleteUserDialogUsername,
-  setCreateAccountDialogEditId,
-  setCreateAccountDialogNameTextfield,
-  setCreateAccountDialogPermissionsSelect,
-  setSnackbarText,
-  setSnackbarShown
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserAccountsPage);

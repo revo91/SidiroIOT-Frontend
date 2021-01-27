@@ -8,7 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import { blue } from '@material-ui/core/colors';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setLanguageDialogOpen } from '../actions/LanguageDialog.action';
 import { useTranslation } from 'react-i18next';
 
@@ -22,19 +22,22 @@ const useStyles = makeStyles({
   }
 });
 
- function LanguageDialog(props) {
+export default function LanguageDialog() {
   const classes = useStyles();
   const { t, i18n } = useTranslation();
+  const open = useSelector(state => state.LanguageDialogReducer.open);
+  const dispatch = useDispatch();
+
   const chooseLanguage = (language) => {
-    props.setLanguageDialogOpen(false)
+    dispatch(setLanguageDialogOpen(false))
     i18n.changeLanguage(language)
   }
 
   return (
-    <Dialog onClose={()=>props.setLanguageDialogOpen(false)} aria-labelledby="simple-dialog-title" open={props.open} fullWidth={true} maxWidth="sm">
+    <Dialog onClose={() => dispatch(setLanguageDialogOpen(false))} aria-labelledby="simple-dialog-title" open={open} fullWidth={true} maxWidth="sm">
       <DialogTitle className={classes.title} id="simple-dialog-title">{t('LanguageSelection.Label')}</DialogTitle>
       <List>
-        <ListItem button onClick={()=>chooseLanguage('pl')}>
+        <ListItem button onClick={() => chooseLanguage('pl')}>
           <ListItemAvatar>
             <Avatar className={classes.avatar}>
               PL
@@ -42,7 +45,7 @@ const useStyles = makeStyles({
           </ListItemAvatar>
           <ListItemText primary={t('LanguageSelection.PolishLanguage')} />
         </ListItem>
-        <ListItem button onClick={()=>chooseLanguage('en')}>
+        <ListItem button onClick={() => chooseLanguage('en')}>
           <ListItemAvatar>
             <Avatar className={classes.avatar}>
               EN
@@ -52,17 +55,5 @@ const useStyles = makeStyles({
         </ListItem>
       </List>
     </Dialog>
-  );
+  )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    open: state.LanguageDialogReducer.open
-  }
-}
-
-const mapDispatchToProps = {
-  setLanguageDialogOpen,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LanguageDialog);
