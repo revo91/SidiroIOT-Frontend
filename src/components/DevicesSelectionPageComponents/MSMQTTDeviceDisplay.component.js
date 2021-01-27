@@ -315,7 +315,7 @@ export default function MSMQTTDeviceDisplay() {
         columns={cols}
         rows={rows}
         collapsedRows={rowToBeCollapsed}
-        name="MSAgentDataSent"
+        name="MSMQTTDeviceDataSent"
       />
     );
   };
