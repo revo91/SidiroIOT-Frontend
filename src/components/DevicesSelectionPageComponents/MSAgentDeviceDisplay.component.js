@@ -153,12 +153,21 @@ export default function MSAgentDeviceDisplay() {
     }
     Object.values(device.dataToSendConfig).forEach((dataConfig, i) => {
       collapsedRows = []
-      //associate deviceId with corresponding device name and elementId with its variable's name
+      //associate deviceId with corresponding device name and elementId with its variable, calcElement or alert name
       dataConfig = {
         ...dataConfig,
         qualityCodeEnabled: `${dataConfig.qualityCodeEnabled}`,
-        associatedDeviceIDName: allDevices[dataConfig.deviceId] !== undefined ? allDevices[dataConfig.deviceId].name : '',
-        associatedElementIDName: allDevices[dataConfig.deviceId] !== undefined && allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !== undefined ? allDevices[dataConfig.deviceId].variables[dataConfig.elementId].name : ''
+        associatedDeviceIDName: allDevices[dataConfig.deviceId] !== undefined ?
+          allDevices[dataConfig.deviceId].name
+          : '',
+        associatedElementIDName: allDevices[dataConfig.deviceId] !== undefined ?
+          allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !== undefined ?
+            allDevices[dataConfig.deviceId].variables[dataConfig.elementId].name :
+            allDevices[dataConfig.deviceId].calcElements[dataConfig.elementId] !== undefined ?
+              allDevices[dataConfig.deviceId].calcElements[dataConfig.elementId].name :
+              allDevices[dataConfig.deviceId].alerts[dataConfig.elementId] !== undefined ?
+                allDevices[dataConfig.deviceId].alerts[dataConfig.elementId].name
+                : '' : ''
       }
       if (tableView === 'simple') {
         rows.push([dataConfig.associatedDeviceIDName, dataConfig.associatedElementIDName, dataConfig.sendingInterval])
@@ -203,17 +212,23 @@ export default function MSAgentDeviceDisplay() {
       ]
     }
     Object.values(device.eventsToSendConfig).forEach((eventConfig, i) => {
-      //associate deviceId with corresponding device name and elementId with its variable's name
+      //associate deviceId with corresponding device name and elementId with its variable, calcElement or alert name
       eventConfig = {
         ...eventConfig,
         associatedDeviceIDName: allDevices[eventConfig.deviceId] !== undefined ? allDevices[eventConfig.deviceId].name : '',
-        associatedElementIDName: allDevices[eventConfig.deviceId] !== undefined && allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !== undefined ? allDevices[eventConfig.deviceId].alerts[eventConfig.elementId].name : '',
+        associatedElementIDName: allDevices[eventConfig.deviceId] !== undefined ?
+        allDevices[eventConfig.deviceId].variables[eventConfig.elementId] !== undefined ?
+          allDevices[eventConfig.deviceId].variables[eventConfig.elementId].name :
+          allDevices[eventConfig.deviceId].calcElements[eventConfig.elementId] !== undefined ?
+            allDevices[eventConfig.deviceId].calcElements[eventConfig.elementId].name :
+            allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !== undefined ?
+              allDevices[eventConfig.deviceId].alerts[eventConfig.elementId].name
+              : '' : '',
         //make sure the following exist, if not set them empty string
         source: eventConfig.source !== undefined ? eventConfig.source : '',
         code: eventConfig.code !== undefined ? eventConfig.code : '',
         acknowledged: eventConfig.acknowledged !== undefined ? `${eventConfig.acknowledged}` : '',
         correlationId: eventConfig.correlationId !== undefined ? eventConfig.correlationId : ''
-
       }
       if (tableView === 'simple') {
         rows.push([eventConfig.associatedDeviceIDName, eventConfig.associatedElementIDName, eventConfig.sendingInterval])
@@ -222,7 +237,6 @@ export default function MSAgentDeviceDisplay() {
         rows.push([eventConfig.associatedDeviceIDName, eventConfig.associatedElementIDName, eventConfig.sendingInterval, eventConfig.source, eventConfig.severity, eventConfig.entityId, eventConfig.correlationId, eventConfig.code, eventConfig.acknowledged])
       }
     })
-
     return <UniversalTable columns={cols} rows={rows} />
   }
 

@@ -77,8 +77,17 @@ export default function InternalDeviceDisplay() {
       //associate associatedDeviceID with corresponding device name and associatedElementID with its property name
       variable = {
         ...variable,
-        associatedDeviceIDName: allDevices[variable.associatedDeviceID] !== undefined ? allDevices[variable.associatedDeviceID].name : '',
-        associatedElementIDName: allDevices[variable.associatedDeviceID] !== undefined && allDevices[variable.associatedDeviceID].variables[variable.associatedElementID] !== undefined ? allDevices[variable.associatedDeviceID].variables[variable.associatedElementID].name : ''
+        associatedDeviceIDName: allDevices[variable.associatedDeviceID] !== undefined ?
+          allDevices[variable.associatedDeviceID].name
+          : '',
+        associatedElementIDName: allDevices[variable.associatedDeviceID] !== undefined ?
+          allDevices[variable.associatedDeviceID].variables[variable.associatedElementID] !== undefined ?
+            allDevices[variable.associatedDeviceID].variables[variable.associatedElementID].name :
+            allDevices[variable.associatedDeviceID].calcElements[variable.associatedElementID] !== undefined ?
+              allDevices[variable.associatedDeviceID].calcElements[variable.associatedElementID].name :
+              allDevices[variable.associatedDeviceID].alerts[variable.associatedElementID] !== undefined ?
+                allDevices[variable.associatedDeviceID].alerts[variable.associatedElementID].name
+                : '' : ''
       }
       if (tableView === 'simple') {
         rows.push([variable.name, variable.value, variable.unit, variable.lastValueTick])

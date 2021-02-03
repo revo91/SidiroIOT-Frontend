@@ -149,12 +149,12 @@ export default function MSMQTTDeviceDisplay() {
             : "",
         associatedElementIDName:
           allDevices[variable.associatedDeviceID] !== undefined &&
-          allDevices[variable.associatedDeviceID].variables[
+            allDevices[variable.associatedDeviceID].variables[
             variable.associatedElementID
-          ] !== undefined
+            ] !== undefined
             ? allDevices[variable.associatedDeviceID].variables[
-                variable.associatedElementID
-              ].name
+              variable.associatedElementID
+            ].name
             : "",
       };
       if (tableView === "simple") {
@@ -202,8 +202,8 @@ export default function MSMQTTDeviceDisplay() {
           variable.lastValueTick === 0
             ? ""
             : formatDateTime(
-                new Date(parseFloat(variable.lastValueTick) * 1000)
-              ),
+              new Date(parseFloat(variable.lastValueTick) * 1000)
+            ),
       };
     });
 
@@ -258,20 +258,21 @@ export default function MSMQTTDeviceDisplay() {
     }
     Object.values(device.dataToSendConfig).forEach((dataConfig, i) => {
       collapsedRows = [];
-      //associate deviceId with corresponding device name and elementId with its variable's name
+      //associate deviceId with corresponding device name and elementId with its variable, calcElement or alert name
       dataConfig = {
         ...dataConfig,
         associatedDeviceIDName:
-          allDevices[dataConfig.deviceId] !== undefined
-            ? allDevices[dataConfig.deviceId].name
-            : "",
-        associatedElementIDName:
-          allDevices[dataConfig.deviceId] !== undefined &&
-          allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !==
-            undefined
-            ? allDevices[dataConfig.deviceId].variables[dataConfig.elementId]
-                .name
-            : "",
+          allDevices[dataConfig.deviceId] !== undefined ?
+            allDevices[dataConfig.deviceId].name
+            : '',
+        associatedElementIDName: allDevices[dataConfig.deviceId] !== undefined ?
+          allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !== undefined ?
+            allDevices[dataConfig.deviceId].variables[dataConfig.elementId].name :
+            allDevices[dataConfig.deviceId].calcElements[dataConfig.elementId] !== undefined ?
+              allDevices[dataConfig.deviceId].calcElements[dataConfig.elementId].name :
+              allDevices[dataConfig.deviceId].alerts[dataConfig.elementId] !== undefined ?
+                allDevices[dataConfig.deviceId].alerts[dataConfig.elementId].name
+                : '' : ''
       };
       if (tableView === "simple") {
         rows.push([
@@ -311,13 +312,13 @@ export default function MSMQTTDeviceDisplay() {
     return tableView === "simple" ? (
       <UniversalTable columns={cols} rows={rows} />
     ) : (
-      <CollapsibleTable
-        columns={cols}
-        rows={rows}
-        collapsedRows={rowToBeCollapsed}
-        name="MSMQTTDeviceDataSent"
-      />
-    );
+        <CollapsibleTable
+          columns={cols}
+          rows={rows}
+          collapsedRows={rowToBeCollapsed}
+          name="MSMQTTDeviceDataSent"
+        />
+      );
   };
 
   //render EVENTS SENT TAB CONTENT
@@ -343,20 +344,22 @@ export default function MSMQTTDeviceDisplay() {
       ];
     }
     Object.values(device.eventsToSendConfig).forEach((eventConfig, i) => {
-      //associate deviceId with corresponding device name and elementId with its variable's name
+      //associate deviceId with corresponding device name and elementId with its variable, calcElement or alert name
       eventConfig = {
         ...eventConfig,
         associatedDeviceIDName:
-          allDevices[eventConfig.deviceId] !== undefined
-            ? allDevices[eventConfig.deviceId].name
+          allDevices[eventConfig.deviceId] !== undefined ?
+            allDevices[eventConfig.deviceId].name
             : "",
         associatedElementIDName:
-          allDevices[eventConfig.deviceId] !== undefined &&
-          allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !==
-            undefined
-            ? allDevices[eventConfig.deviceId].alerts[eventConfig.elementId]
-                .name
-            : "",
+          allDevices[eventConfig.deviceId] !== undefined ?
+            allDevices[eventConfig.deviceId].variables[eventConfig.elementId] !== undefined ?
+              allDevices[eventConfig.deviceId].variables[eventConfig.elementId].name :
+              allDevices[eventConfig.deviceId].calcElements[eventConfig.elementId] !== undefined ?
+                allDevices[eventConfig.deviceId].calcElements[eventConfig.elementId].name :
+                allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !== undefined ?
+                  allDevices[eventConfig.deviceId].alerts[eventConfig.elementId].name
+                  : '' : ''
       };
       if (tableView === "simple") {
         rows.push([
