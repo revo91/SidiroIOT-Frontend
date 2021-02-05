@@ -8,6 +8,8 @@ import ExpressionCalculatorTable from './ExpressionCalculatorTable.component';
 import ValueFromByteArrayCalculatorTable from './ValueFromByteArrayCalculatorTable.component';
 import AverageCalculatorTable from './AverageCalculatorTable.component';
 import FactorCalculatorTable from './FactorCalculatorTable.component';
+import MaxCalculatorTable from './MaxCalculatorTable.component';
+import MinCalculatorTable from './MinCalculatorTable.component';
 import { formatDateTime } from '../../utilities/formatDateTime.utility';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,6 +36,8 @@ export default function EdgeComputingTabContent({ calcElementsObject }) {
   const valueFromByteArrayCalculator = calcElements.filter(calcElement => calcElement.type === 'ValueFromByteArrayCalculator')
   const factorCalculator = calcElements.filter(calcElement => calcElement.type === 'FactorCalculator')
   const averageCalculator = calcElements.filter(calcElement => calcElement.type === 'AverageCalculator')
+  const maxCalculator = calcElements.filter(calcElement => calcElement.type === 'MaxCalculator')
+  const minCalculator = calcElements.filter(calcElement => calcElement.type === 'MinCalculator')
 
   return (
     <React.Fragment>
@@ -67,6 +71,20 @@ export default function EdgeComputingTabContent({ calcElementsObject }) {
         <React.Fragment>
           <Typography variant="h6" className={classes.topMargin}>{t('DevicesSelectionPage.Properties.FactorCalculator')}</Typography>
           <FactorCalculatorTable factorCalcElementsArray={factorCalculator} />
+        </React.Fragment>
+        : null
+      }
+      {maxCalculator.length > 0 ?
+        <React.Fragment>
+          <Typography variant="h6" className={classes.topMargin}>{t('DevicesSelectionPage.Properties.MaxCalculator')}</Typography>
+          <MaxCalculatorTable maxCalcElementsArray={maxCalculator} />
+        </React.Fragment>
+        : null
+      }
+      {minCalculator.length > 0 ?
+        <React.Fragment>
+          <Typography variant="h6" className={classes.topMargin}>{t('DevicesSelectionPage.Properties.MinCalculator')}</Typography>
+          <MinCalculatorTable minCalcElementsArray={minCalculator} />
         </React.Fragment>
         : null
       }
