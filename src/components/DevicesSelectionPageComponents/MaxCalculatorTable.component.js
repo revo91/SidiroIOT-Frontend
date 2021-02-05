@@ -39,7 +39,7 @@ export default function MaxCalculatorTable({ maxCalcElementsArray }) {
       rows.push([calcElement.name, calcElement.value, calcElement.unit, calcElement.lastValueTick])
     }
     else {
-      rows.push([calcElement.name, calcElement.type, calcElement.value, calcElement.unit, calcElement.defaultValue, calcElement.factor, calcElement.sampleTime, calcElement.calculationInterval, calcElement.variableIDName, calcElement.lastValueTick])
+      rows.push([calcElement.name, calcElement.type, calcElement.value, calcElement.unit, calcElement.defaultValue, calcElement.sampleTime, calcElement.calculationInterval, calcElement.variableIDName, calcElement.lastValueTick])
     }
   })
   return (
