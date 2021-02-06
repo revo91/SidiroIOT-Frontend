@@ -3,7 +3,7 @@ import UniversalTabs from "../UniversalTabs.component";
 import { UniversalTable } from "../UniversalTable.component";
 import { CollapsibleTable } from "../CollapsibleTable.component";
 import { useTranslation } from "react-i18next";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -12,6 +12,7 @@ import DeviceDetailsTitle from "./DeviceDetailsTitle.component";
 import EdgeComputingTabContent from "./EdgeComputingTabContent.component";
 import AlertsTabContent from "./AlertsTabContent.component";
 import MSAgentBottomToolbar from "./MSAgentBottomToolbar.component";
+import { displayTickNormalization } from "../../utilities/tickNormalization";
 
 const useStyles = makeStyles((theme) => ({
   topMargin: {
@@ -26,9 +27,13 @@ const useStyles = makeStyles((theme) => ({
 export default function MSMQTTDeviceDisplay() {
   const { t } = useTranslation();
   const classes = useStyles();
-  const selectedDevice = useSelector(state => state.DevicesListReducer);
-  const allDevices = useSelector(state => state.DevicesSelectionPageReducer.devices);
-  const tableView = useSelector(state => state.DevicesSelectionPageReducer.tableView);
+  const selectedDevice = useSelector((state) => state.DevicesListReducer);
+  const allDevices = useSelector(
+    (state) => state.DevicesSelectionPageReducer.devices
+  );
+  const tableView = useSelector(
+    (state) => state.DevicesSelectionPageReducer.tableView
+  );
 
   const device = allDevices[selectedDevice.selectedDeviceID];
 
@@ -149,12 +154,12 @@ export default function MSMQTTDeviceDisplay() {
             : "",
         associatedElementIDName:
           allDevices[variable.associatedDeviceID] !== undefined &&
-            allDevices[variable.associatedDeviceID].variables[
+          allDevices[variable.associatedDeviceID].variables[
             variable.associatedElementID
-            ] !== undefined
+          ] !== undefined
             ? allDevices[variable.associatedDeviceID].variables[
-              variable.associatedElementID
-            ].name
+                variable.associatedElementID
+              ].name
             : "",
       };
       if (tableView === "simple") {
@@ -202,8 +207,8 @@ export default function MSMQTTDeviceDisplay() {
           variable.lastValueTick === 0
             ? ""
             : formatDateTime(
-              new Date(parseFloat(variable.lastValueTick) * 1000)
-            ),
+                new Date(parseFloat(variable.lastValueTick) * 1000)
+              ),
       };
     });
 
@@ -254,6 +259,7 @@ export default function MSMQTTDeviceDisplay() {
         t("DevicesSelectionPage.Properties.unit"),
         t("DevicesSelectionPage.Properties.groupName"),
         t("DevicesSelectionPage.Properties.sendingInterval"),
+        t("DevicesSelectionPage.Properties.tickNormalization"),
       ];
     }
     Object.values(device.dataToSendConfig).forEach((dataConfig, i) => {
@@ -261,18 +267,33 @@ export default function MSMQTTDeviceDisplay() {
       //associate deviceId with corresponding device name and elementId with its variable, calcElement or alert name
       dataConfig = {
         ...dataConfig,
+        tickNormalization: displayTickNormalization(
+          t,
+          dataConfig.tickNormalization
+        ),
         associatedDeviceIDName:
-          allDevices[dataConfig.deviceId] !== undefined ?
-            allDevices[dataConfig.deviceId].name
-            : '',
-        associatedElementIDName: allDevices[dataConfig.deviceId] !== undefined ?
-          allDevices[dataConfig.deviceId].variables[dataConfig.elementId] !== undefined ?
-            allDevices[dataConfig.deviceId].variables[dataConfig.elementId].name :
-            allDevices[dataConfig.deviceId].calcElements[dataConfig.elementId] !== undefined ?
-              allDevices[dataConfig.deviceId].calcElements[dataConfig.elementId].name :
-              allDevices[dataConfig.deviceId].alerts[dataConfig.elementId] !== undefined ?
-                allDevices[dataConfig.deviceId].alerts[dataConfig.elementId].name
-                : '' : ''
+          allDevices[dataConfig.deviceId] !== undefined
+            ? allDevices[dataConfig.deviceId].name
+            : "",
+        associatedElementIDName:
+          allDevices[dataConfig.deviceId] !== undefined
+            ? allDevices[dataConfig.deviceId].variables[
+                dataConfig.elementId
+              ] !== undefined
+              ? allDevices[dataConfig.deviceId].variables[dataConfig.elementId]
+                  .name
+              : allDevices[dataConfig.deviceId].calcElements[
+                  dataConfig.elementId
+                ] !== undefined
+              ? allDevices[dataConfig.deviceId].calcElements[
+                  dataConfig.elementId
+                ].name
+              : allDevices[dataConfig.deviceId].alerts[dataConfig.elementId] !==
+                undefined
+              ? allDevices[dataConfig.deviceId].alerts[dataConfig.elementId]
+                  .name
+              : ""
+            : "",
       };
       if (tableView === "simple") {
         rows.push([
@@ -305,6 +326,7 @@ export default function MSMQTTDeviceDisplay() {
           dataConfig.variableUnit,
           dataConfig.groupName,
           dataConfig.sendingInterval,
+          dataConfig.tickNormalization,
         ]);
       }
     });
@@ -312,13 +334,13 @@ export default function MSMQTTDeviceDisplay() {
     return tableView === "simple" ? (
       <UniversalTable columns={cols} rows={rows} />
     ) : (
-        <CollapsibleTable
-          columns={cols}
-          rows={rows}
-          collapsedRows={rowToBeCollapsed}
-          name="MSMQTTDeviceDataSent"
-        />
-      );
+      <CollapsibleTable
+        columns={cols}
+        rows={rows}
+        collapsedRows={rowToBeCollapsed}
+        name="MSMQTTDeviceDataSent"
+      />
+    );
   };
 
   //render EVENTS SENT TAB CONTENT
@@ -348,18 +370,30 @@ export default function MSMQTTDeviceDisplay() {
       eventConfig = {
         ...eventConfig,
         associatedDeviceIDName:
-          allDevices[eventConfig.deviceId] !== undefined ?
-            allDevices[eventConfig.deviceId].name
+          allDevices[eventConfig.deviceId] !== undefined
+            ? allDevices[eventConfig.deviceId].name
             : "",
         associatedElementIDName:
-          allDevices[eventConfig.deviceId] !== undefined ?
-            allDevices[eventConfig.deviceId].variables[eventConfig.elementId] !== undefined ?
-              allDevices[eventConfig.deviceId].variables[eventConfig.elementId].name :
-              allDevices[eventConfig.deviceId].calcElements[eventConfig.elementId] !== undefined ?
-                allDevices[eventConfig.deviceId].calcElements[eventConfig.elementId].name :
-                allDevices[eventConfig.deviceId].alerts[eventConfig.elementId] !== undefined ?
-                  allDevices[eventConfig.deviceId].alerts[eventConfig.elementId].name
-                  : '' : ''
+          allDevices[eventConfig.deviceId] !== undefined
+            ? allDevices[eventConfig.deviceId].variables[
+                eventConfig.elementId
+              ] !== undefined
+              ? allDevices[eventConfig.deviceId].variables[
+                  eventConfig.elementId
+                ].name
+              : allDevices[eventConfig.deviceId].calcElements[
+                  eventConfig.elementId
+                ] !== undefined
+              ? allDevices[eventConfig.deviceId].calcElements[
+                  eventConfig.elementId
+                ].name
+              : allDevices[eventConfig.deviceId].alerts[
+                  eventConfig.elementId
+                ] !== undefined
+              ? allDevices[eventConfig.deviceId].alerts[eventConfig.elementId]
+                  .name
+              : ""
+            : "",
       };
       if (tableView === "simple") {
         rows.push([
